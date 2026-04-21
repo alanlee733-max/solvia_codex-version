@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales CRM Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-icon"><i class="ph-fill ph-hexagon"></i></div>
+                    <span class="brand-name">CRM Base</span>
+                </div>
+            </div>
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">Workspace</span>
+                    <a href="#" class="nav-item"><i class="ph ph-magnifying-glass"></i> Search</a>
+                    <a href="#" class="nav-item"><i class="ph ph-bell"></i> Notifications</a>
+                    <a href="#" class="nav-item"><i class="ph ph-check-square"></i> Tasks</a>
+                    <a href="#" class="nav-item"><i class="ph ph-envelope-simple"></i> Emails</a>
+                </div>
+                <div class="nav-section">
+                    <span class="nav-section-title">Objects</span>
+                    <a href="#" class="nav-item"><i class="ph ph-buildings"></i> Companies</a>
+                    <a href="#" class="nav-item"><i class="ph ph-users"></i> People</a>
+                    <a href="#" class="nav-item active"><i class="ph ph-briefcase"></i> Deals</a>
+                </div>
+                <div class="nav-section">
+                    <span class="nav-section-title">Views</span>
+                    <a href="#" class="nav-item"><i class="ph ph-globe"></i> APAC Region</a>
+                    <a href="#" class="nav-item"><i class="ph ph-star"></i> Priority Leads</a>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">JS</div>
+                    <span class="username">John Sales</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-breadcrumb">
+                    <span class="breadcrumb-item">Deals</span>
+                    <i class="ph ph-caret-right"></i>
+                    <span class="breadcrumb-item active">APAC Dashboard</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
+                    <button class="btn btn-primary"><i class="ph ph-plus"></i> New Deal</button>
+                </div>
+            </header>
+
+            <div class="dashboard-scroll-area">
+                <!-- Dashboard Layout -->
+                <div class="dashboard-grid">
+                    
+                    <!-- Summary Cards -->
+                    <div class="summary-cards">
+                        <div class="card summary-card">
+                            <div class="card-title">Total Pipeline</div>
+                            <div class="card-value">$2.4M</div>
+                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +12% this month</div>
+                        </div>
+                        <div class="card summary-card">
+                            <div class="card-title">Deals Won</div>
+                            <div class="card-value">18</div>
+                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +4 this month</div>
+                        </div>
+                        <div class="card summary-card">
+                            <div class="card-title">Avg Deal Size</div>
+                            <div class="card-value">$45k</div>
+                            <div class="card-trend neutral"><i class="ph ph-minus"></i> No change</div>
+                        </div>
+                    </div>
+
+                    <div class="grid-row-2">
+                        <!-- Pipeline Section -->
+                        <div class="card pipeline-section">
+                            <div class="card-header">
+                                <h3>Pipeline Stages</h3>
+                                <button class="btn-icon"><i class="ph ph-dots-three"></i></button>
+                            </div>
+                            <div class="pipeline-funnel">
+                                <div class="funnel-stage">
+                                    <div class="stage-info">
+                                        <span class="stage-name">Lead</span>
+                                        <span class="stage-count">45</span>
+                                    </div>
+                                    <div class="stage-bar" style="width: 100%"></div>
+                                </div>
+                                <div class="funnel-stage">
+                                    <div class="stage-info">
+                                        <span class="stage-name">Contacted</span>
+                                        <span class="stage-count">32</span>
+                                    </div>
+                                    <div class="stage-bar" style="width: 71%"></div>
+                                </div>
+                                <div class="funnel-stage">
+                                    <div class="stage-info">
+                                        <span class="stage-name">Negotiation</span>
+                                        <span class="stage-count">14</span>
+                                    </div>
+                                    <div class="stage-bar" style="width: 31%"></div>
+                                </div>
+                                <div class="funnel-stage">
+                                    <div class="stage-info">
+                                        <span class="stage-name">Won</span>
+                                        <span class="stage-count">8</span>
+                                    </div>
+                                    <div class="stage-bar" style="width: 17%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Next Actions Section -->
+                        <div class="card next-actions">
+                            <div class="card-header">
+                                <h3>Next Actions</h3>
+                                <button class="btn-icon"><i class="ph ph-dots-three"></i></button>
+                            </div>
+                            <div class="action-list">
+                                <div class="action-item">
+                                    <input type="checkbox" class="action-check">
+                                    <div class="action-details">
+                                        <p class="action-title">Send NDA to Bangkok Clinic</p>
+                                        <p class="action-meta">Due Today • Skin Booster</p>
+                                    </div>
+                                </div>
+                                <div class="action-item">
+                                    <input type="checkbox" class="action-check">
+                                    <div class="action-details">
+                                        <p class="action-title">Follow up quote with KL Aesthetics</p>
+                                        <p class="action-meta">Due Tomorrow • HA Filler</p>
+                                    </div>
+                                </div>
+                                <div class="action-item">
+                                    <input type="checkbox" class="action-check">
+                                    <div class="action-details">
+                                        <p class="action-title">Product demo: RF Device</p>
+                                        <p class="action-meta">Due Friday • UAE Medical Group</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Deals Table -->
+                    <div class="card data-table-section">
+                        <div class="card-header">
+                            <h3>Active Deals</h3>
+                            <div class="table-actions">
+                                <div class="search-box">
+                                    <i class="ph ph-magnifying-glass"></i>
+                                    <input type="text" id="dealSearch" placeholder="Search deals...">
+                                </div>
+                                <button class="btn btn-secondary"><i class="ph ph-sliders-horizontal"></i> Filter</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Country</th>
+                                        <th>Product Interest</th>
+                                        <th>Stage</th>
+                                        <th>Priority</th>
+                                        <th>Value</th>
+                                        <th>Last Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dealsTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
