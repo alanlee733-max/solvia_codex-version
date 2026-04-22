@@ -99,8 +99,6 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 8px 12px;
-    display: grid;
-    gap: 4px;
 }
 
 .nav-section {
