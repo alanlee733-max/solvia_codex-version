@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales CRM Dashboard</title>
+    <title>Alan CRM Lite</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -15,29 +15,29 @@
             <div class="sidebar-header">
                 <div class="brand">
                     <div class="brand-icon"><i class="ph-fill ph-hexagon"></i></div>
-                    <span class="brand-name">CRM Base</span>
+                    <span class="brand-name">Alan CRM Lite</span>
                 </div>
             </div>
-            <div class="sidebar-nav">
+            <nav class="sidebar-nav">
                 <div class="nav-section">
                     <span class="nav-section-title">Workspace</span>
-                    <a href="#" class="nav-item"><i class="ph ph-magnifying-glass"></i> Search</a>
-                    <a href="#" class="nav-item"><i class="ph ph-bell"></i> Notifications</a>
-                    <a href="#" class="nav-item"><i class="ph ph-check-square"></i> Tasks</a>
-                    <a href="#" class="nav-item"><i class="ph ph-envelope-simple"></i> Emails</a>
+                    <a href="#" class="nav-item active"><i class="ph ph-check-square"></i> Tasks</a>
                 </div>
+
                 <div class="nav-section">
                     <span class="nav-section-title">Objects</span>
-                    <a href="#" class="nav-item"><i class="ph ph-buildings"></i> Companies</a>
-                    <a href="#" class="nav-item"><i class="ph ph-users"></i> People</a>
-                    <a href="#" class="nav-item active"><i class="ph ph-briefcase"></i> Deals</a>
+                    <a href="#" class="nav-item"><i class="ph ph-lightbulb"></i> Leads</a>
+                    <a href="#" class="nav-item"><i class="ph ph-handshake"></i> Partners</a>
+                    <a href="#" class="nav-item"><i class="ph ph-briefcase"></i> Deals</a>
+                    <a href="#" class="nav-item"><i class="ph ph-package"></i> Orders</a>
                 </div>
+
                 <div class="nav-section">
                     <span class="nav-section-title">Views</span>
-                    <a href="#" class="nav-item"><i class="ph ph-globe"></i> APAC Region</a>
-                    <a href="#" class="nav-item"><i class="ph ph-star"></i> Priority Leads</a>
+                    <a href="#" class="nav-item"><i class="ph ph-clock-countdown"></i> Follow-up</a>
+                    <a href="#" class="nav-item"><i class="ph ph-globe"></i> By Country</a>
                 </div>
-            </div>
+            </nav>
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="avatar">JS</div>
@@ -50,14 +50,10 @@
         <main class="main-content">
             <!-- Top Header -->
             <header class="top-header">
-                <div class="header-breadcrumb">
-                    <span class="breadcrumb-item">Deals</span>
-                    <i class="ph ph-caret-right"></i>
-                    <span class="breadcrumb-item active">APAC Dashboard</span>
-                </div>
+                <h1 class="header-title">Overseas Sales Control Board</h1>
                 <div class="header-actions">
                     <button class="btn btn-secondary"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
-                    <button class="btn btn-primary"><i class="ph ph-plus"></i> New Deal</button>
+                    <button class="btn btn-primary" id="openNewDealBtn"><i class="ph ph-plus"></i> New Deal</button>
                 </div>
             </header>
 
@@ -69,18 +65,18 @@
                     <div class="summary-cards">
                         <div class="card summary-card">
                             <div class="card-title">Total Pipeline</div>
-                            <div class="card-value">$2.4M</div>
-                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +12% this month</div>
+                            <div class="card-value" id="totalPipelineValue">$0</div>
+                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> Live from deals data</div>
                         </div>
                         <div class="card summary-card">
                             <div class="card-title">Deals Won</div>
-                            <div class="card-value">18</div>
-                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +4 this month</div>
+                            <div class="card-value" id="dealsWonValue">0</div>
+                            <div class="card-trend positive"><i class="ph ph-check-circle"></i> Count of won deals</div>
                         </div>
                         <div class="card summary-card">
                             <div class="card-title">Avg Deal Size</div>
-                            <div class="card-value">$45k</div>
-                            <div class="card-trend neutral"><i class="ph ph-minus"></i> No change</div>
+                            <div class="card-value" id="avgDealSizeValue">$0</div>
+                            <div class="card-trend neutral"><i class="ph ph-minus"></i> Average across all deals</div>
                         </div>
                     </div>
 
@@ -91,35 +87,8 @@
                                 <h3>Pipeline Stages</h3>
                                 <button class="btn-icon"><i class="ph ph-dots-three"></i></button>
                             </div>
-                            <div class="pipeline-funnel">
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Lead</span>
-                                        <span class="stage-count">45</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 100%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Contacted</span>
-                                        <span class="stage-count">32</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 71%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Negotiation</span>
-                                        <span class="stage-count">14</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 31%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Won</span>
-                                        <span class="stage-count">8</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 17%"></div>
-                                </div>
+                            <div class="pipeline-funnel" id="pipelineStages">
+                                <!-- Populated by JS -->
                             </div>
                         </div>
 
@@ -191,6 +160,56 @@
             </div>
         </main>
     </div>
+
+    <!-- New Deal Modal -->
+    <div class="modal-overlay" id="newDealModal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>New Deal</h3>
+                <button class="btn-icon" id="closeNewDealBtn" aria-label="Close new deal form"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="newDealForm" class="modal-form">
+                <label>
+                    Company
+                    <input type="text" name="company" required>
+                </label>
+                <label>
+                    Country
+                    <input type="text" name="country" required>
+                </label>
+                <label>
+                    Product Interest
+                    <input type="text" name="product" required>
+                </label>
+                <label>
+                    Stage
+                    <select name="stage" required>
+                        <option value="Lead">Lead</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Negotiation">Negotiation</option>
+                        <option value="Won">Won</option>
+                    </select>
+                </label>
+                <label>
+                    Priority
+                    <select name="priority" required>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </label>
+                <label>
+                    Value (USD)
+                    <input type="number" name="value" min="1" step="1000" required>
+                </label>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelNewDealBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Deal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
