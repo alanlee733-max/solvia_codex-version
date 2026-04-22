@@ -21,13 +21,13 @@
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <span class="nav-section-title">Workspace</span>
-                    <a href="#" class="nav-item active"><i class="ph ph-check-square"></i> Tasks</a>
+                    <a href="#" class="nav-item active" data-view="dashboard"><i class="ph ph-check-square"></i> Tasks</a>
                 </div>
 
                 <div class="nav-section">
                     <span class="nav-section-title">Objects</span>
                     <a href="#" class="nav-item"><i class="ph ph-lightbulb"></i> Leads</a>
-                    <a href="#" class="nav-item"><i class="ph ph-handshake"></i> Partners</a>
+                    <a href="#" class="nav-item" data-view="partners"><i class="ph ph-handshake"></i> Partners</a>
                     <a href="#" class="nav-item"><i class="ph ph-briefcase"></i> Deals</a>
                     <a href="#" class="nav-item"><i class="ph ph-package"></i> Orders</a>
                 </div>
@@ -50,14 +50,14 @@
         <main class="main-content">
             <!-- Top Header -->
             <header class="top-header">
-                <h1 class="header-title">Overseas Sales Control Board</h1>
+                <h1 class="header-title" id="headerTitle">Overseas Sales Control Board</h1>
                 <div class="header-actions">
                     <button class="btn btn-secondary"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
                     <button class="btn btn-primary" id="openNewDealBtn"><i class="ph ph-plus"></i> New Deal</button>
                 </div>
             </header>
 
-            <div class="dashboard-scroll-area">
+            <div class="dashboard-scroll-area view-panel" id="dashboardView">
                 <!-- Dashboard Layout -->
                 <div class="dashboard-grid">
                     
@@ -156,6 +156,84 @@
                         </div>
                     </div>
 
+                </div>
+            </div>
+
+            <div class="dashboard-scroll-area view-panel hidden" id="partnersView">
+                <div class="dashboard-grid">
+                    <div class="summary-cards">
+                        <div class="card summary-card">
+                            <div class="card-title">Total Partners</div>
+                            <div class="card-value" id="partnersTotalValue">0</div>
+                            <div class="card-trend neutral"><i class="ph ph-buildings"></i> Registered partners</div>
+                        </div>
+                        <div class="card summary-card">
+                            <div class="card-title">Active Partners</div>
+                            <div class="card-value" id="partnersActiveValue">0</div>
+                            <div class="card-trend positive"><i class="ph ph-check-circle"></i> Ready for orders</div>
+                        </div>
+                        <div class="card summary-card">
+                            <div class="card-title">Revenue YTD</div>
+                            <div class="card-value" id="partnersRevenueValue">$0</div>
+                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> Partner channel revenue</div>
+                        </div>
+                        <div class="card summary-card">
+                            <div class="card-title">Needs Action</div>
+                            <div class="card-value" id="partnersNeedsActionValue">0</div>
+                            <div class="card-trend neutral"><i class="ph ph-warning-circle"></i> Follow-up required</div>
+                        </div>
+                    </div>
+
+                    <div class="card partners-filters-card">
+                        <div class="partners-filters">
+                            <div class="search-box">
+                                <i class="ph ph-magnifying-glass"></i>
+                                <input type="text" id="partnerSearch" placeholder="Search company, country, contact...">
+                            </div>
+                            <select id="partnerCountryFilter"><option value="">All Countries</option></select>
+                            <select id="partnerCategoryFilter"><option value="">All Products</option></select>
+                            <select id="partnerStatusFilter"><option value="">All Status</option></select>
+                            <select id="partnerPriorityFilter"><option value="">All Priority</option></select>
+                        </div>
+                    </div>
+
+                    <div class="card data-table-section">
+                        <div class="card-header">
+                            <h3>Partners</h3>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Country</th>
+                                        <th>Contact</th>
+                                        <th>Email</th>
+                                        <th>Website</th>
+                                        <th>Product Focus</th>
+                                        <th>Status</th>
+                                        <th>Last Contact</th>
+                                        <th>Next Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="partnersTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card partner-detail-card">
+                        <div class="card-header">
+                            <h3 id="partnerDetailTitle">Partner Detail</h3>
+                        </div>
+                        <div class="partner-detail-tabs">
+                            <button class="detail-tab active" data-partner-tab="overview">Overview</button>
+                            <button class="detail-tab" data-partner-tab="orders">Order History</button>
+                            <button class="detail-tab" data-partner-tab="contact">Contact Log</button>
+                            <button class="detail-tab" data-partner-tab="samples">Samples</button>
+                            <button class="detail-tab" data-partner-tab="notes">Notes</button>
+                        </div>
+                        <div class="partner-detail-content" id="partnerDetailContent"></div>
+                    </div>
                 </div>
             </div>
         </main>

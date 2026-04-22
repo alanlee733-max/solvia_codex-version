@@ -62,9 +62,95 @@ const sampleDeals = [
     }
 ];
 
+const samplePartners = [
+    {
+        id: 101,
+        company: 'Seoul Beauty Trading',
+        country: 'South Korea',
+        contact: 'Mina Park',
+        email: 'mina@seoulbeautytrading.kr',
+        website: 'https://seoulbeautytrading.kr',
+        productFocus: ['HA Filler', 'Skin Booster'],
+        status: 'Active',
+        priority: 'High',
+        lastContact: '2026-04-20',
+        nextAction: 'MOQ negotiation call',
+        revenueYtd: 210000,
+        needsAction: true,
+        overview: 'Strong clinic channel partner with monthly repeat orders.',
+        orderHistory: ['Mar 2026: USD 75,000', 'Jan 2026: USD 62,000', 'Nov 2025: USD 73,000'],
+        contactLog: ['2026-04-20: Price revision sent', '2026-04-14: Forecast received'],
+        samples: ['Skin Booster lot S-22 shipped', 'HA Filler vials approved'],
+        notes: 'Prefers 60-day terms. Requesting bilingual product guide.'
+    },
+    {
+        id: 102,
+        company: 'Viva Estetica Distribution',
+        country: 'Mexico',
+        contact: 'Carlos Ruiz',
+        email: 'carlos@vivaestetica.mx',
+        website: 'https://vivaestetica.mx',
+        productFocus: ['Laser Device', 'RF Device'],
+        status: 'Prospect Partner',
+        priority: 'Medium',
+        lastContact: '2026-04-11',
+        nextAction: 'Send distributor agreement draft',
+        revenueYtd: 0,
+        needsAction: true,
+        overview: 'New prospect focused on private dermatology networks.',
+        orderHistory: ['No order yet'],
+        contactLog: ['2026-04-11: Intro meeting complete', '2026-04-06: Product deck shared'],
+        samples: ['RF handpiece demo requested'],
+        notes: 'Decision expected in May after legal review.'
+    },
+    {
+        id: 103,
+        company: 'Nordic Aesthetic Supply',
+        country: 'Sweden',
+        contact: 'Elin Dahl',
+        email: 'elin@nordicaesthetic.se',
+        website: 'https://nordicaesthetic.se',
+        productFocus: ['Body Contouring', 'RF Device'],
+        status: 'Dormant',
+        priority: 'Low',
+        lastContact: '2026-01-27',
+        nextAction: 'Re-activate with Q3 promo kit',
+        revenueYtd: 34000,
+        needsAction: false,
+        overview: 'Historically stable but paused purchases due to inventory.',
+        orderHistory: ['Oct 2025: USD 34,000'],
+        contactLog: ['2026-01-27: Pause confirmed'],
+        samples: ['No active sample request'],
+        notes: 'Target reactivation before September expo season.'
+    },
+    {
+        id: 104,
+        company: 'Gulf Dermatech LLC',
+        country: 'UAE',
+        contact: 'Amal Nasser',
+        email: 'amal@gulfdermatech.ae',
+        website: 'https://gulfdermatech.ae',
+        productFocus: ['HA Filler', 'Laser Device'],
+        status: 'On Hold',
+        priority: 'High',
+        lastContact: '2026-04-08',
+        nextAction: 'Regulatory document update',
+        revenueYtd: 56000,
+        needsAction: true,
+        overview: 'Commercial terms agreed, waiting for document completion.',
+        orderHistory: ['Feb 2026: USD 56,000'],
+        contactLog: ['2026-04-08: Docs gap identified'],
+        samples: ['Laser consumables under review'],
+        notes: 'Needs local compliance file before PO release.'
+    }
+];
+
 const STORAGE_KEY = 'alan_crm_lite_deals';
 const stageOrder = ['Lead', 'Contacted', 'Negotiation', 'Won'];
 let deals = [];
+let partners = [...samplePartners];
+let selectedPartnerId = samplePartners[0].id;
+let activePartnerTab = 'overview';
 
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', {
@@ -89,6 +175,16 @@ function getPriorityBadgeClass(priority) {
         case 'High': return 'badge-red';
         case 'Medium': return 'badge-yellow';
         case 'Low': return 'badge-green';
+        default: return 'badge-gray';
+    }
+}
+
+function getPartnerStatusBadgeClass(status) {
+    switch (status) {
+        case 'Active': return 'badge-green';
+        case 'Prospect Partner': return 'badge-blue';
+        case 'Dormant': return 'badge-gray';
+        case 'On Hold': return 'badge-yellow';
         default: return 'badge-gray';
     }
 }
@@ -186,7 +282,7 @@ function renderTableBody(dealsToRender) {
     });
 }
 
-function renderAll() {
+function renderDealsView() {
     renderSummaryCards();
     renderPipeline();
     renderTableBody(deals);
@@ -257,16 +353,231 @@ function setupNewDealModal() {
 
         deals.unshift(newDeal);
         saveDeals();
-        renderAll();
+        renderDealsView();
 
         form.reset();
         closeModal();
     });
 }
 
+function fillSelectOptions(selectId, values) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    values.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+    });
+}
+
+function renderPartnersKPIs() {
+    const totalPartners = partners.length;
+    const activePartners = partners.filter(partner => partner.status === 'Active').length;
+    const revenueYtd = partners.reduce((sum, partner) => sum + Number(partner.revenueYtd || 0), 0);
+    const needsAction = partners.filter(partner => partner.needsAction).length;
+
+    document.getElementById('partnersTotalValue').textContent = String(totalPartners);
+    document.getElementById('partnersActiveValue').textContent = String(activePartners);
+    document.getElementById('partnersRevenueValue').textContent = formatCurrency(revenueYtd);
+    document.getElementById('partnersNeedsActionValue').textContent = String(needsAction);
+}
+
+function getPartnerFilters() {
+    return {
+        search: document.getElementById('partnerSearch').value.toLowerCase().trim(),
+        country: document.getElementById('partnerCountryFilter').value,
+        category: document.getElementById('partnerCategoryFilter').value,
+        status: document.getElementById('partnerStatusFilter').value,
+        priority: document.getElementById('partnerPriorityFilter').value
+    };
+}
+
+function getFilteredPartners() {
+    const filters = getPartnerFilters();
+
+    return partners.filter(partner => {
+        const matchesSearch = !filters.search
+            || partner.company.toLowerCase().includes(filters.search)
+            || partner.country.toLowerCase().includes(filters.search)
+            || partner.contact.toLowerCase().includes(filters.search)
+            || partner.email.toLowerCase().includes(filters.search);
+
+        const matchesCountry = !filters.country || partner.country === filters.country;
+        const matchesCategory = !filters.category || partner.productFocus.includes(filters.category);
+        const matchesStatus = !filters.status || partner.status === filters.status;
+        const matchesPriority = !filters.priority || partner.priority === filters.priority;
+
+        return matchesSearch && matchesCountry && matchesCategory && matchesStatus && matchesPriority;
+    });
+}
+
+function renderPartnersTable() {
+    const filteredPartners = getFilteredPartners();
+    const tableBody = document.getElementById('partnersTableBody');
+    tableBody.innerHTML = '';
+
+    if (!filteredPartners.some(partner => partner.id === selectedPartnerId) && filteredPartners.length > 0) {
+        selectedPartnerId = filteredPartners[0].id;
+    }
+
+    if (filteredPartners.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; color: var(--text-tertiary);">No partners match your filters.</td></tr>';
+        renderPartnerDetail(null);
+        return;
+    }
+
+    filteredPartners.forEach(partner => {
+        const row = document.createElement('tr');
+        if (partner.id === selectedPartnerId) {
+            row.classList.add('selected-row');
+        }
+
+        row.innerHTML = `
+            <td class="company-cell">${partner.company}</td>
+            <td>${partner.country}</td>
+            <td>${partner.contact}</td>
+            <td><a href="mailto:${partner.email}">${partner.email}</a></td>
+            <td><a href="${partner.website}" target="_blank" rel="noopener noreferrer">${partner.website.replace('https://', '')}</a></td>
+            <td><div class="focus-tags">${partner.productFocus.map(item => `<span class="focus-tag">${item}</span>`).join('')}</div></td>
+            <td><span class="badge ${getPartnerStatusBadgeClass(partner.status)}">${partner.status}</span></td>
+            <td>${partner.lastContact}</td>
+            <td>${partner.nextAction}</td>
+        `;
+
+        row.addEventListener('click', () => {
+            selectedPartnerId = partner.id;
+            renderPartnersTable();
+            renderPartnerDetail(partner);
+        });
+
+        tableBody.appendChild(row);
+    });
+
+    const selectedPartner = filteredPartners.find(partner => partner.id === selectedPartnerId) || filteredPartners[0];
+    renderPartnerDetail(selectedPartner);
+}
+
+function renderPartnerDetail(partner) {
+    const title = document.getElementById('partnerDetailTitle');
+    const content = document.getElementById('partnerDetailContent');
+
+    if (!partner) {
+        title.textContent = 'Partner Detail';
+        content.innerHTML = '<p class="detail-note">Select a partner row to see details.</p>';
+        return;
+    }
+
+    title.textContent = `${partner.company} Detail`;
+
+    if (activePartnerTab === 'overview') {
+        content.innerHTML = `
+            <p class="detail-note">${partner.overview}</p>
+            <div class="detail-grid">
+                <div class="detail-item"><div class="detail-item-label">Country</div><div class="detail-item-value">${partner.country}</div></div>
+                <div class="detail-item"><div class="detail-item-label">Email</div><div class="detail-item-value">${partner.email}</div></div>
+                <div class="detail-item"><div class="detail-item-label">Website</div><div class="detail-item-value">${partner.website}</div></div>
+                <div class="detail-item"><div class="detail-item-label">Priority</div><div class="detail-item-value">${partner.priority}</div></div>
+            </div>
+        `;
+        return;
+    }
+
+    if (activePartnerTab === 'orders') {
+        content.innerHTML = `<div class="detail-list">${partner.orderHistory.map(item => `<div>• ${item}</div>`).join('')}</div>`;
+        return;
+    }
+
+    if (activePartnerTab === 'contact') {
+        content.innerHTML = `<div class="detail-list">${partner.contactLog.map(item => `<div>• ${item}</div>`).join('')}</div>`;
+        return;
+    }
+
+    if (activePartnerTab === 'samples') {
+        content.innerHTML = `<div class="detail-list">${partner.samples.map(item => `<div>• ${item}</div>`).join('')}</div>`;
+        return;
+    }
+
+    content.innerHTML = `<p class="detail-note">${partner.notes}</p>`;
+}
+
+function setupPartnerFilters() {
+    const countries = [...new Set(partners.map(partner => partner.country))].sort();
+    const categories = [...new Set(partners.flatMap(partner => partner.productFocus))].sort();
+    const statuses = [...new Set(partners.map(partner => partner.status))].sort();
+    const priorities = [...new Set(partners.map(partner => partner.priority))].sort();
+
+    fillSelectOptions('partnerCountryFilter', countries);
+    fillSelectOptions('partnerCategoryFilter', categories);
+    fillSelectOptions('partnerStatusFilter', statuses);
+    fillSelectOptions('partnerPriorityFilter', priorities);
+
+    ['partnerSearch', 'partnerCountryFilter', 'partnerCategoryFilter', 'partnerStatusFilter', 'partnerPriorityFilter'].forEach(id => {
+        const element = document.getElementById(id);
+        const eventName = id === 'partnerSearch' ? 'input' : 'change';
+        element.addEventListener(eventName, renderPartnersTable);
+    });
+}
+
+function setupPartnerDetailTabs() {
+    const tabButtons = document.querySelectorAll('.detail-tab');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(tab => tab.classList.remove('active'));
+            button.classList.add('active');
+            activePartnerTab = button.dataset.partnerTab;
+
+            const selectedPartner = partners.find(partner => partner.id === selectedPartnerId) || null;
+            renderPartnerDetail(selectedPartner);
+        });
+    });
+}
+
+function switchMainView(viewName) {
+    const dashboardView = document.getElementById('dashboardView');
+    const partnersView = document.getElementById('partnersView');
+    const headerTitle = document.getElementById('headerTitle');
+    const newDealButton = document.getElementById('openNewDealBtn');
+
+    const isPartners = viewName === 'partners';
+    dashboardView.classList.toggle('hidden', isPartners);
+    partnersView.classList.toggle('hidden', !isPartners);
+
+    headerTitle.textContent = isPartners ? 'Partners Management' : 'Overseas Sales Control Board';
+    newDealButton.style.display = isPartners ? 'none' : 'inline-flex';
+
+    if (isPartners) {
+        renderPartnersKPIs();
+        renderPartnersTable();
+    }
+}
+
+function setupSidebarViewSwitching() {
+    const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', (event) => {
+            const targetView = item.dataset.view;
+            if (!targetView) {
+                return;
+            }
+
+            event.preventDefault();
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            switchMainView(targetView);
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadDeals();
-    renderAll();
+    renderDealsView();
     setupSearch();
     setupNewDealModal();
+
+    setupPartnerFilters();
+    setupPartnerDetailTabs();
+    setupSidebarViewSwitching();
 });
