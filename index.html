@@ -1,196 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales CRM Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clarity CRM - Acme Solutions Inc. Dossier</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+    .custom-shadow {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+    .timeline-line::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: #cbd5e1;
+      z-index: 0;
+    }
+  </style>
 </head>
-<body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="brand">
-                    <div class="brand-icon"><i class="ph-fill ph-hexagon"></i></div>
-                    <span class="brand-name">CRM Base</span>
+<body class="h-screen overflow-hidden">
+  <div class="flex h-full">
+    <aside class="w-60 bg-[#f8fafc] border-r border-slate-200 flex flex-col shrink-0">
+      <div class="p-6">
+        <div class="flex items-center gap-2 mb-8">
+          <div class="w-8 h-8 bg-blue-600 flex items-center justify-center text-white font-bold rounded-full">C</div>
+          <span class="font-bold text-lg text-slate-800">Clarity CRM</span>
+        </div>
+        <nav class="space-y-1">
+          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Command Center
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 bg-[#e0ebff] text-blue-700 rounded-md transition-colors text-sm font-semibold" href="#">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Entities
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Pipeline
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Tasks
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Activity
+          </a>
+          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Reports
+          </a>
+        </nav>
+      </div>
+
+      <div class="mt-auto border-t border-slate-100 p-4 space-y-4">
+        <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          Settings
+        </a>
+        <div class="flex items-center gap-3 px-3 py-2">
+          <img alt="Jane Doe" class="w-8 h-8 rounded-full bg-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBig2JqTEWA2uSOd5y6N4Y1mOnuC4rS18HNus-hpsb5WbbRxLMVQ922cV4DUdqbxz1snOxjsd_ELuG-aH58qmA8SKvl5MDrO1diZT96814rFhbuOp3HiHb1bVSv6yoVTLhc9V2RX2xpP4PpTgOl73e01sviNTbCmqfTJh9NpA8pBqvrGQ93uQ8wzTmTvWKCcbX6pe6MSy2ztsT3N9n7x-axnTyvRzaA9C_nQLAi5uS3u44WRqiDubY-GkwMH9jHSm19_8s_AQW5dvs" />
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-slate-800 truncate">Jane Doe</p>
+          </div>
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        </div>
+        <button id="openDraftingTableBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">
+          Open Drafting Table
+        </button>
+      </div>
+    </aside>
+
+    <div class="flex-1 min-w-0 flex flex-col h-full">
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-end px-8 gap-4 z-10">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </span>
+          <input class="block w-64 pl-10 pr-3 py-1.5 border border-slate-200 rounded-lg bg-slate-50 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Search" type="text" />
+        </div>
+        <div class="relative">
+          <svg class="w-6 h-6 text-slate-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+        </div>
+        <img alt="User" class="w-8 h-8 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfVwGDj59S_tq5wjxNpEUd6_GCoy8i5nPKhvU1nEjrEVdg8kgF3U3CW_jsXoYg2jHSRBjWRGkRKL_BuKrWA6r4nApZ5t5Lgnl9_GbMjYvwsCqFYqgvhTgHotaWWd-NPTCFAXOAjcFYooZZovzwqPmygpd46CmxEOCV3Cf3YpfrW1gQCtbhuVLPWkshSlmZSqWJwAIe6QJlN-PGSknGLFQUNqXt7_1HAJ-rtfbPBWkI5JfePIc-S0GVeOsRTvMoyVk50v66-5S46ck" />
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-800">Entity Dossier: Acme Solutions Inc.</h1>
+          <p class="text-sm text-slate-400 mt-1">Entities / Acme Solutions Inc.</p>
+        </div>
+
+        <div class="rounded-xl p-8 text-white flex flex-wrap items-center justify-between gap-6 bg-[#546e7a]">
+          <div class="flex items-center gap-6">
+            <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center text-slate-800 text-4xl font-bold">A</div>
+            <div>
+              <h2 class="text-3xl font-bold">Acme Solutions Inc.</h2>
+              <p class="text-slate-300 font-medium">Technology Providers</p>
+              <div class="mt-2 space-y-1 text-sm text-slate-300">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  www.acmesolutions.com
                 </div>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  San Francisco, CA
+                </div>
+              </div>
             </div>
-            <div class="sidebar-nav">
-                <div class="nav-section">
-                    <span class="nav-section-title">Workspace</span>
-                    <a href="#" class="nav-item"><i class="ph ph-magnifying-glass"></i> Search</a>
-                    <a href="#" class="nav-item"><i class="ph ph-bell"></i> Notifications</a>
-                    <a href="#" class="nav-item"><i class="ph ph-check-square"></i> Tasks</a>
-                    <a href="#" class="nav-item"><i class="ph ph-envelope-simple"></i> Emails</a>
-                </div>
-                <div class="nav-section">
-                    <span class="nav-section-title">Objects</span>
-                    <a href="#" class="nav-item"><i class="ph ph-buildings"></i> Companies</a>
-                    <a href="#" class="nav-item"><i class="ph ph-users"></i> People</a>
-                    <a href="#" class="nav-item active"><i class="ph ph-briefcase"></i> Deals</a>
-                </div>
-                <div class="nav-section">
-                    <span class="nav-section-title">Views</span>
-                    <a href="#" class="nav-item"><i class="ph ph-globe"></i> APAC Region</a>
-                    <a href="#" class="nav-item"><i class="ph ph-star"></i> Priority Leads</a>
-                </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="bg-[#f0f5ff] rounded-xl p-4 min-w-[180px]">
+              <div class="flex items-center gap-2 text-slate-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span class="text-sm font-semibold">Quotation: Sent</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1 pl-7">(Pending Review)</p>
             </div>
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="avatar">JS</div>
-                    <span class="username">John Sales</span>
-                </div>
+            <div class="bg-[#e6f7ed] rounded-xl p-4 min-w-[180px]">
+              <div class="flex items-center gap-2 text-slate-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span class="text-sm font-semibold">Sample: Requested</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1 pl-7">(in Transit)</p>
             </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Header -->
-            <header class="top-header">
-                <div class="header-breadcrumb">
-                    <span class="breadcrumb-item">Deals</span>
-                    <i class="ph ph-caret-right"></i>
-                    <span class="breadcrumb-item active">APAC Dashboard</span>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-secondary"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
-                    <button class="btn btn-primary"><i class="ph ph-plus"></i> New Deal</button>
-                </div>
-            </header>
-
-            <div class="dashboard-scroll-area">
-                <!-- Dashboard Layout -->
-                <div class="dashboard-grid">
-                    
-                    <!-- Summary Cards -->
-                    <div class="summary-cards">
-                        <div class="card summary-card">
-                            <div class="card-title">Total Pipeline</div>
-                            <div class="card-value">$2.4M</div>
-                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +12% this month</div>
-                        </div>
-                        <div class="card summary-card">
-                            <div class="card-title">Deals Won</div>
-                            <div class="card-value">18</div>
-                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +4 this month</div>
-                        </div>
-                        <div class="card summary-card">
-                            <div class="card-title">Avg Deal Size</div>
-                            <div class="card-value">$45k</div>
-                            <div class="card-trend neutral"><i class="ph ph-minus"></i> No change</div>
-                        </div>
-                    </div>
-
-                    <div class="grid-row-2">
-                        <!-- Pipeline Section -->
-                        <div class="card pipeline-section">
-                            <div class="card-header">
-                                <h3>Pipeline Stages</h3>
-                                <button class="btn-icon"><i class="ph ph-dots-three"></i></button>
-                            </div>
-                            <div class="pipeline-funnel">
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Lead</span>
-                                        <span class="stage-count">45</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 100%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Contacted</span>
-                                        <span class="stage-count">32</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 71%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Negotiation</span>
-                                        <span class="stage-count">14</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 31%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Won</span>
-                                        <span class="stage-count">8</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 17%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Next Actions Section -->
-                        <div class="card next-actions">
-                            <div class="card-header">
-                                <h3>Next Actions</h3>
-                                <button class="btn-icon"><i class="ph ph-dots-three"></i></button>
-                            </div>
-                            <div class="action-list">
-                                <div class="action-item">
-                                    <input type="checkbox" class="action-check">
-                                    <div class="action-details">
-                                        <p class="action-title">Send NDA to Bangkok Clinic</p>
-                                        <p class="action-meta">Due Today • Skin Booster</p>
-                                    </div>
-                                </div>
-                                <div class="action-item">
-                                    <input type="checkbox" class="action-check">
-                                    <div class="action-details">
-                                        <p class="action-title">Follow up quote with KL Aesthetics</p>
-                                        <p class="action-meta">Due Tomorrow • HA Filler</p>
-                                    </div>
-                                </div>
-                                <div class="action-item">
-                                    <input type="checkbox" class="action-check">
-                                    <div class="action-details">
-                                        <p class="action-title">Product demo: RF Device</p>
-                                        <p class="action-meta">Due Friday • UAE Medical Group</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Active Deals Table -->
-                    <div class="card data-table-section">
-                        <div class="card-header">
-                            <h3>Active Deals</h3>
-                            <div class="table-actions">
-                                <div class="search-box">
-                                    <i class="ph ph-magnifying-glass"></i>
-                                    <input type="text" id="dealSearch" placeholder="Search deals...">
-                                </div>
-                                <button class="btn btn-secondary"><i class="ph ph-sliders-horizontal"></i> Filter</button>
-                            </div>
-                        </div>
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Company</th>
-                                        <th>Country</th>
-                                        <th>Product Interest</th>
-                                        <th>Stage</th>
-                                        <th>Priority</th>
-                                        <th>Value</th>
-                                        <th>Last Active</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dealsTableBody">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
+            <div class="bg-[#fff9e6] rounded-xl p-4 min-w-[180px]">
+              <div class="flex items-center gap-2 text-slate-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span class="text-sm font-semibold">Registration: Pending</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1 pl-7">(Doc. Submitted)</p>
             </div>
-        </main>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-6">
+          <div class="col-span-3 space-y-6">
+            <section class="bg-white rounded-xl p-6 custom-shadow">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-slate-800">Contacts</h3>
+                <button class="bg-blue-600 text-white text-[10px] uppercase tracking-wider font-bold py-1 px-3 rounded hover:bg-blue-700">Add Contact</button>
+              </div>
+              <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-slate-200"></div>
+                  <div class="flex-1"><p class="text-sm font-semibold text-slate-800">Jane Doe</p><p class="text-xs text-slate-400">Primary Contact</p></div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-slate-200"></div>
+                  <div class="flex-1"><p class="text-sm font-semibold text-slate-800">John Smith</p><p class="text-xs text-slate-400">Sales Lead</p></div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-slate-200"></div>
+                  <div class="flex-1"><p class="text-sm font-semibold text-slate-800">Gain Barry</p><p class="text-xs text-slate-400">Sales Lead</p></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="bg-white rounded-xl p-6 custom-shadow">
+              <h3 class="font-bold text-slate-800 mb-6">Active Deals</h3>
+              <div class="space-y-6">
+                <div class="flex justify-between items-start"><div><p class="text-sm font-bold text-slate-800">Q3 Pilot Project</p><p class="text-xs text-slate-400">Stage: Negotiation</p></div><p class="font-bold text-slate-800">$15,000</p></div>
+                <div class="flex justify-between items-start"><div><p class="text-sm font-bold text-slate-800">Expansion Plan</p><p class="text-xs text-slate-400">Stage: Prospecting</p></div><p class="font-bold text-slate-800">$50,000</p></div>
+                <div class="flex justify-between items-start"><div><p class="text-sm font-bold text-slate-800">Expansion Plan</p><p class="text-xs text-slate-400">Stage: Negotiation, Reachupk</p></div><p class="font-bold text-slate-800">$20,000</p></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-span-6">
+            <section class="bg-white rounded-xl p-8 custom-shadow min-h-full">
+              <h3 class="text-lg font-bold text-slate-800 mb-6">Interaction Timeline</h3>
+              <div class="flex gap-4 mb-10">
+                <div class="w-10 h-10 rounded bg-slate-200"></div>
+                <div class="flex-1"><input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Log activity, note, call..." type="text" /></div>
+              </div>
+              <div class="relative timeline-line pl-10 space-y-8">
+                <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4"><div class="flex justify-between"><h4 class="font-bold text-slate-800 text-sm">Email from Jane Doe</h4><span class="text-[10px] text-slate-400 uppercase font-bold">Today, 10:45 AM</span></div><p class="text-sm text-slate-500 italic mt-2">"Re: Contract Review: Thanks for the draft, we will review..."</p></div>
+                <div class="bg-white border border-slate-100 rounded-xl p-4 shadow-sm"><div class="flex justify-between"><h4 class="font-bold text-slate-800 text-sm">Call Log</h4><span class="text-[10px] text-slate-400 uppercase font-bold">Yesterday, 2:30 PM</span></div><p class="text-sm text-slate-600 mt-2">Call with John Smith</p><p class="text-xs text-slate-400">Duration: 15m. Discussed implementation timeline.</p></div>
+                <div class="bg-[#fffbea] border border-yellow-100 rounded-xl p-4"><div class="flex justify-between"><h4 class="font-bold text-slate-800 text-sm">Note</h4><span class="text-[10px] text-slate-400 uppercase font-bold">Yesterday, 11:00 AM</span></div><p class="text-sm text-slate-600 mt-2">Internal Note: Client is keen on moving forward with the proposal.</p></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-span-3 space-y-6">
+            <section class="bg-white rounded-xl p-6 custom-shadow">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-slate-800">Pinned Notes</h3>
+                <svg class="w-5 h-5 text-slate-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              </div>
+              <div class="space-y-4 text-sm text-slate-700">
+                <p><span class="font-bold text-slate-800">Key Info:</span> Preferred shipping method is FedEx.</p>
+                <p><span class="font-bold text-slate-800">Note:</span> Decision maker will be on leave next week.</p>
+                <p><span class="font-bold text-slate-800">Key Info:</span> Decision maker will be on leave next week.</p>
+              </div>
+            </section>
+
+            <section class="bg-white rounded-xl p-6 custom-shadow">
+              <h3 class="font-bold text-slate-800 mb-6">Next Actions</h3>
+              <div class="space-y-5">
+                <label class="flex items-start gap-3 cursor-pointer group"><input class="mt-1 h-4 w-4" type="checkbox" /><div><p class="text-sm font-semibold text-slate-800">Send updated proposal</p><p class="text-[10px] text-slate-400 font-bold uppercase">Due: Tomorrow</p></div></label>
+                <label class="flex items-start gap-3 cursor-pointer group"><input class="mt-1 h-4 w-4" type="checkbox" /><div><p class="text-sm font-semibold text-slate-800">Follow up on sample feedback</p><p class="text-[10px] text-slate-400 font-bold uppercase">Due: Next Week</p></div></label>
+                <label class="flex items-start gap-3 cursor-pointer group"><input class="mt-1 h-4 w-4" type="checkbox" /><div><p class="text-sm font-semibold text-slate-800">Schedule demo with technical team</p><p class="text-[10px] text-slate-400 font-bold uppercase">Due: In 2 Weeks</p></div></label>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
     </div>
-    <script src="script.js"></script>
+  </div>
+
+  <div id="draftingBackdrop" class="fixed inset-0 bg-slate-900/20 hidden"></div>
+  <aside id="draftingPanel" class="fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-slate-200 shadow-xl transform translate-x-full transition-transform duration-200 ease-out z-30 flex flex-col">
+    <div class="h-16 border-b border-slate-200 px-5 flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-slate-800">Drafting Table</h2>
+      <button id="closeDraftingTableBtn" class="text-slate-500 hover:text-slate-700">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+    </div>
+
+    <div class="p-5 border-b border-slate-100">
+      <div class="grid grid-cols-4 gap-2 text-xs">
+        <button class="draft-tab px-2 py-2 rounded-md bg-blue-600 text-white" data-type="note">Note</button>
+        <button class="draft-tab px-2 py-2 rounded-md bg-slate-100 text-slate-600" data-type="task">Task</button>
+        <button class="draft-tab px-2 py-2 rounded-md bg-slate-100 text-slate-600" data-type="call">Call Log</button>
+        <button class="draft-tab px-2 py-2 rounded-md bg-slate-100 text-slate-600" data-type="follow">Follow-up</button>
+      </div>
+    </div>
+
+    <div class="p-5 space-y-4 flex-1 overflow-y-auto">
+      <p id="draftTypeLabel" class="text-sm font-medium text-slate-700">Writing: Note</p>
+      <input id="draftTitle" type="text" class="w-full border border-slate-200 rounded-md text-sm" placeholder="Title" />
+      <textarea id="draftBody" class="w-full min-h-[220px] border border-slate-200 rounded-md text-sm" placeholder="Write details..."></textarea>
+      <div class="flex justify-end gap-2">
+        <button id="cancelDraftingBtn" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+        <button class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">Save Draft</button>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    const openBtn = document.getElementById('openDraftingTableBtn');
+    const closeBtn = document.getElementById('closeDraftingTableBtn');
+    const cancelBtn = document.getElementById('cancelDraftingBtn');
+    const panel = document.getElementById('draftingPanel');
+    const backdrop = document.getElementById('draftingBackdrop');
+    const tabs = document.querySelectorAll('.draft-tab');
+    const typeLabel = document.getElementById('draftTypeLabel');
+
+    function openDraftingTable() {
+      panel.classList.remove('translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+
+    function closeDraftingTable() {
+      panel.classList.add('translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    openBtn.addEventListener('click', openDraftingTable);
+    closeBtn.addEventListener('click', closeDraftingTable);
+    cancelBtn.addEventListener('click', closeDraftingTable);
+    backdrop.addEventListener('click', closeDraftingTable);
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((btn) => {
+          btn.classList.remove('bg-blue-600', 'text-white');
+          btn.classList.add('bg-slate-100', 'text-slate-600');
+        });
+
+        tab.classList.remove('bg-slate-100', 'text-slate-600');
+        tab.classList.add('bg-blue-600', 'text-white');
+
+        const map = {
+          note: 'Writing: Note',
+          task: 'Writing: Task',
+          call: 'Writing: Call Log',
+          follow: 'Writing: Follow-up'
+        };
+
+        typeLabel.textContent = map[tab.dataset.type] || 'Writing: Note';
+      });
+    });
+  </script>
 </body>
 </html>
