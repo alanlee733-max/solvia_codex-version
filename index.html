@@ -88,18 +88,24 @@
     </aside>
 
     <div class="flex-1 min-w-0 flex flex-col h-full">
-      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-end px-8 gap-4 z-10">
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
-            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          </span>
-          <input class="block w-64 pl-10 pr-3 py-1.5 border border-slate-200 rounded-lg bg-slate-50 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Search" type="text" />
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
+        <div>
+          <p id="headerTitle" class="text-sm font-semibold text-slate-800">Entity Dossier: Acme Solutions Inc.</p>
+          <p id="headerSubtitle" class="text-xs text-slate-400">Entities / Acme Solutions Inc.</p>
         </div>
-        <div class="relative">
-          <svg class="w-6 h-6 text-slate-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+              <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </span>
+            <input class="block w-64 pl-10 pr-3 py-1.5 border border-slate-200 rounded-lg bg-slate-50 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Search" type="text" />
+          </div>
+          <div class="relative">
+            <svg class="w-6 h-6 text-slate-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+          </div>
+          <img alt="User" class="w-8 h-8 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfVwGDj59S_tq5wjxNpEUd6_GCoy8i5nPKhvU1nEjrEVdg8kgF3U3CW_jsXoYg2jHSRBjWRGkRKL_BuKrWA6r4nApZ5t5Lgnl9_GbMjYvwsCqFYqgvhTgHotaWWd-NPTCFAXOAjcFYooZZovzwqPmygpd46CmxEOCV3Cf3YpfrW1gQCtbhuVLPWkshSlmZSqWJwAIe6QJlN-PGSknGLFQUNqXt7_1HAJ-rtfbPBWkI5JfePIc-S0GVeOsRTvMoyVk50v66-5S46ck" />
         </div>
-        <img alt="User" class="w-8 h-8 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfVwGDj59S_tq5wjxNpEUd6_GCoy8i5nPKhvU1nEjrEVdg8kgF3U3CW_jsXoYg2jHSRBjWRGkRKL_BuKrWA6r4nApZ5t5Lgnl9_GbMjYvwsCqFYqgvhTgHotaWWd-NPTCFAXOAjcFYooZZovzwqPmygpd46CmxEOCV3Cf3YpfrW1gQCtbhuVLPWkshSlmZSqWJwAIe6QJlN-PGSknGLFQUNqXt7_1HAJ-rtfbPBWkI5JfePIc-S0GVeOsRTvMoyVk50v66-5S46ck" />
       </header>
 
       <main id="viewRoot" class="flex-1 overflow-y-auto p-8"></main>
@@ -135,6 +141,14 @@
 
   <script>
     const appState = { currentView: 'partners' };
+    const viewMeta = {
+      overview: { title: 'Overview', subtitle: 'Command Center / Snapshot' },
+      partners: { title: 'Entity Dossier: Acme Solutions Inc.', subtitle: 'Entities / Acme Solutions Inc.' },
+      deals: { title: 'Deals Pipeline', subtitle: 'Pipeline / Active deals' },
+      tasks: { title: 'Task Board', subtitle: 'Tasks / Weekly execution' },
+      activity: { title: 'Activity Feed', subtitle: 'Activity / Recent touchpoints' },
+      documents: { title: 'Documents', subtitle: 'Reports / Files and templates' }
+    };
 
     const viewTemplates = {
       overview: () => `
@@ -265,7 +279,14 @@
       const viewRoot = document.getElementById('viewRoot');
       const template = viewTemplates[appState.currentView] || viewTemplates.overview;
       viewRoot.innerHTML = template();
+      updateHeaderContext();
       updateSidebarActiveState();
+    }
+
+    function updateHeaderContext() {
+      const meta = viewMeta[appState.currentView] || viewMeta.overview;
+      document.getElementById('headerTitle').textContent = meta.title;
+      document.getElementById('headerSubtitle').textContent = meta.subtitle;
     }
 
     function updateSidebarActiveState() {
