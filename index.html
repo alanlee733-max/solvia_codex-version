@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clarity CRM - Acme Solutions Inc. Dossier</title>
+  <title>Clarity CRM - App Shell</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -38,31 +38,31 @@
       </div>
 
       <div class="p-4 pt-5">
-        <nav class="space-y-1">
-          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+        <nav class="space-y-1" id="sidebarNav">
+          <button data-view="overview" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Command Center
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2 bg-[#e0ebff] text-blue-700 rounded-md transition-colors text-sm font-semibold" href="#">
+          </button>
+          <button data-view="partners" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-semibold bg-[#e0ebff] text-blue-700">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Entities
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+          </button>
+          <button data-view="deals" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Pipeline
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+          </button>
+          <button data-view="tasks" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Tasks
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+          </button>
+          <button data-view="activity" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Activity
-          </a>
-          <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+          </button>
+          <button data-view="documents" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Reports
-          </a>
+          </button>
         </nav>
       </div>
 
@@ -76,11 +76,8 @@
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-slate-800 truncate">Jane Doe</p>
           </div>
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
         </div>
-        <button id="openDraftingTableBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">
-          Open Drafting Table
-        </button>
+        <button id="openDraftingTableBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">Open Drafting Table</button>
       </div>
     </aside>
 
@@ -99,127 +96,7 @@
         <img alt="User" class="w-8 h-8 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfVwGDj59S_tq5wjxNpEUd6_GCoy8i5nPKhvU1nEjrEVdg8kgF3U3CW_jsXoYg2jHSRBjWRGkRKL_BuKrWA6r4nApZ5t5Lgnl9_GbMjYvwsCqFYqgvhTgHotaWWd-NPTCFAXOAjcFYooZZovzwqPmygpd46CmxEOCV3Cf3YpfrW1gQCtbhuVLPWkshSlmZSqWJwAIe6QJlN-PGSknGLFQUNqXt7_1HAJ-rtfbPBWkI5JfePIc-S0GVeOsRTvMoyVk50v66-5S46ck" />
       </header>
 
-      <main class="flex-1 overflow-y-auto p-8 space-y-6">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-800">Entity Dossier: Acme Solutions Inc.</h1>
-          <p class="text-sm text-slate-400 mt-1">Entities / Acme Solutions Inc.</p>
-        </div>
-
-        <div class="rounded-xl p-8 text-white flex flex-wrap items-center justify-between gap-6 bg-[#546e7a]">
-          <div class="flex items-center gap-6">
-            <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center text-slate-800 text-4xl font-bold">A</div>
-            <div>
-              <h2 class="text-3xl font-bold">Acme Solutions Inc.</h2>
-              <p class="text-slate-300 font-medium">Technology Providers</p>
-              <div class="mt-2 space-y-1 text-sm text-slate-300">
-                <div class="flex items-center gap-2">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                  www.acmesolutions.com
-                </div>
-                <div class="flex items-center gap-2">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                  San Francisco, CA
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="flex gap-4">
-            <div class="bg-[#f0f5ff] rounded-xl p-4 min-w-[180px]">
-              <div class="flex items-center gap-2 text-slate-800">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                <span class="text-sm font-semibold">Quotation: Sent</span>
-              </div>
-              <p class="text-xs text-slate-500 mt-1 pl-7">(Pending Review)</p>
-            </div>
-            <div class="bg-[#e6f7ed] rounded-xl p-4 min-w-[180px]">
-              <div class="flex items-center gap-2 text-slate-800">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                <span class="text-sm font-semibold">Sample: Requested</span>
-              </div>
-              <p class="text-xs text-slate-500 mt-1 pl-7">(in Transit)</p>
-            </div>
-            <div class="bg-[#fff9e6] rounded-xl p-4 min-w-[180px]">
-              <div class="flex items-center gap-2 text-slate-800">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                <span class="text-sm font-semibold">Registration: Pending</span>
-              </div>
-              <p class="text-xs text-slate-500 mt-1 pl-7">(Doc. Submitted)</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-12 gap-6">
-          <div class="col-span-3 space-y-6">
-            <section class="bg-white rounded-xl p-6 custom-shadow">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-slate-800">Contacts</h3>
-                <button class="bg-blue-600 text-white text-[10px] uppercase tracking-wider font-bold py-1 px-3 rounded hover:bg-blue-700">Add Contact</button>
-              </div>
-              <div class="space-y-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-slate-200"></div>
-                  <div class="flex-1"><p class="text-sm font-semibold text-slate-800">Jane Doe</p><p class="text-xs text-slate-400">Primary Contact</p></div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-slate-200"></div>
-                  <div class="flex-1"><p class="text-sm font-semibold text-slate-800">John Smith</p><p class="text-xs text-slate-400">Sales Lead</p></div>
-                </div>
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-slate-200"></div>
-                  <div class="flex-1"><p class="text-sm font-semibold text-slate-800">Gain Barry</p><p class="text-xs text-slate-400">Sales Lead</p></div>
-                </div>
-              </div>
-            </section>
-
-            <section class="bg-white rounded-xl p-6 custom-shadow">
-              <h3 class="font-bold text-slate-800 mb-6">Active Deals</h3>
-              <div class="space-y-6">
-                <div class="flex justify-between items-start"><div><p class="text-sm font-bold text-slate-800">Q3 Pilot Project</p><p class="text-xs text-slate-400">Stage: Negotiation</p></div><p class="font-bold text-slate-800">$15,000</p></div>
-                <div class="flex justify-between items-start"><div><p class="text-sm font-bold text-slate-800">Expansion Plan</p><p class="text-xs text-slate-400">Stage: Prospecting</p></div><p class="font-bold text-slate-800">$50,000</p></div>
-                <div class="flex justify-between items-start"><div><p class="text-sm font-bold text-slate-800">Expansion Plan</p><p class="text-xs text-slate-400">Stage: Negotiation, Reachupk</p></div><p class="font-bold text-slate-800">$20,000</p></div>
-              </div>
-            </section>
-          </div>
-
-          <div class="col-span-6">
-            <section class="bg-white rounded-xl p-8 custom-shadow min-h-full">
-              <h3 class="text-lg font-bold text-slate-800 mb-6">Interaction Timeline</h3>
-              <div class="flex gap-4 mb-10">
-                <div class="w-10 h-10 rounded bg-slate-200"></div>
-                <div class="flex-1"><input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Log activity, note, call..." type="text" /></div>
-              </div>
-              <div class="relative timeline-line pl-10 space-y-8">
-                <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4"><div class="flex justify-between"><h4 class="font-bold text-slate-800 text-sm">Email from Jane Doe</h4><span class="text-[10px] text-slate-400 uppercase font-bold">Today, 10:45 AM</span></div><p class="text-sm text-slate-500 italic mt-2">"Re: Contract Review: Thanks for the draft, we will review..."</p></div>
-                <div class="bg-white border border-slate-100 rounded-xl p-4 shadow-sm"><div class="flex justify-between"><h4 class="font-bold text-slate-800 text-sm">Call Log</h4><span class="text-[10px] text-slate-400 uppercase font-bold">Yesterday, 2:30 PM</span></div><p class="text-sm text-slate-600 mt-2">Call with John Smith</p><p class="text-xs text-slate-400">Duration: 15m. Discussed implementation timeline.</p></div>
-                <div class="bg-[#fffbea] border border-yellow-100 rounded-xl p-4"><div class="flex justify-between"><h4 class="font-bold text-slate-800 text-sm">Note</h4><span class="text-[10px] text-slate-400 uppercase font-bold">Yesterday, 11:00 AM</span></div><p class="text-sm text-slate-600 mt-2">Internal Note: Client is keen on moving forward with the proposal.</p></div>
-              </div>
-            </section>
-          </div>
-
-          <div class="col-span-3 space-y-6">
-            <section class="bg-white rounded-xl p-6 custom-shadow">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-slate-800">Pinned Notes</h3>
-                <svg class="w-5 h-5 text-slate-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-              </div>
-              <div class="space-y-4 text-sm text-slate-700">
-                <p><span class="font-bold text-slate-800">Key Info:</span> Preferred shipping method is FedEx.</p>
-                <p><span class="font-bold text-slate-800">Note:</span> Decision maker will be on leave next week.</p>
-                <p><span class="font-bold text-slate-800">Key Info:</span> Decision maker will be on leave next week.</p>
-              </div>
-            </section>
-
-            <section class="bg-white rounded-xl p-6 custom-shadow">
-              <h3 class="font-bold text-slate-800 mb-6">Next Actions</h3>
-              <div class="space-y-5">
-                <label class="flex items-start gap-3 cursor-pointer group"><input class="mt-1 h-4 w-4" type="checkbox" /><div><p class="text-sm font-semibold text-slate-800">Send updated proposal</p><p class="text-[10px] text-slate-400 font-bold uppercase">Due: Tomorrow</p></div></label>
-                <label class="flex items-start gap-3 cursor-pointer group"><input class="mt-1 h-4 w-4" type="checkbox" /><div><p class="text-sm font-semibold text-slate-800">Follow up on sample feedback</p><p class="text-[10px] text-slate-400 font-bold uppercase">Due: Next Week</p></div></label>
-                <label class="flex items-start gap-3 cursor-pointer group"><input class="mt-1 h-4 w-4" type="checkbox" /><div><p class="text-sm font-semibold text-slate-800">Schedule demo with technical team</p><p class="text-[10px] text-slate-400 font-bold uppercase">Due: In 2 Weeks</p></div></label>
-              </div>
-            </section>
-          </div>
-        </div>
-      </main>
+      <main id="viewRoot" class="flex-1 overflow-y-auto p-8"></main>
     </div>
   </div>
 
@@ -231,7 +108,6 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
       </button>
     </div>
-
     <div class="p-5 border-b border-slate-100">
       <div class="grid grid-cols-4 gap-2 text-xs">
         <button class="draft-tab px-2 py-2 rounded-md bg-blue-600 text-white" data-type="note">Note</button>
@@ -240,11 +116,10 @@
         <button class="draft-tab px-2 py-2 rounded-md bg-slate-100 text-slate-600" data-type="follow">Follow-up</button>
       </div>
     </div>
-
     <div class="p-5 space-y-4 flex-1 overflow-y-auto">
       <p id="draftTypeLabel" class="text-sm font-medium text-slate-700">Writing: Note</p>
-      <input id="draftTitle" type="text" class="w-full border border-slate-200 rounded-md text-sm" placeholder="Title" />
-      <textarea id="draftBody" class="w-full min-h-[220px] border border-slate-200 rounded-md text-sm" placeholder="Write details..."></textarea>
+      <input type="text" class="w-full border border-slate-200 rounded-md text-sm" placeholder="Title" />
+      <textarea class="w-full min-h-[220px] border border-slate-200 rounded-md text-sm" placeholder="Write details..."></textarea>
       <div class="flex justify-end gap-2">
         <button id="cancelDraftingBtn" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
         <button class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">Save Draft</button>
@@ -253,48 +128,211 @@
   </aside>
 
   <script>
-    const openBtn = document.getElementById('openDraftingTableBtn');
-    const closeBtn = document.getElementById('closeDraftingTableBtn');
-    const cancelBtn = document.getElementById('cancelDraftingBtn');
-    const panel = document.getElementById('draftingPanel');
-    const backdrop = document.getElementById('draftingBackdrop');
-    const tabs = document.querySelectorAll('.draft-tab');
-    const typeLabel = document.getElementById('draftTypeLabel');
+    const appState = { currentView: 'partners' };
 
-    function openDraftingTable() {
-      panel.classList.remove('translate-x-full');
-      backdrop.classList.remove('hidden');
+    const viewTemplates = {
+      overview: () => `
+        <div class="space-y-6">
+          <div>
+            <h1 class="text-2xl font-bold text-slate-800">Overview</h1>
+            <p class="text-sm text-slate-400 mt-1">Command Center / Snapshot</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            ${['Open Deals', 'Pending Tasks', 'Partners Active', 'Revenue MTD'].map((item, i) => `
+              <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
+                <p class="text-sm text-slate-500">${item}</p>
+                <p class="text-2xl font-bold text-slate-800 mt-2">${['18', '7', '12', '$84K'][i]}</p>
+              </div>
+            `).join('')}
+          </div>
+          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100">
+            <h3 class="font-semibold text-slate-800 mb-3">Weekly Focus</h3>
+            <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
+              <li>Finalize 2 distributor quotes for UAE and Thailand.</li>
+              <li>Collect sample feedback from 3 partner clinics.</li>
+              <li>Review regulatory document checklist for new market onboarding.</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      partners: () => `
+        <div class="space-y-6">
+          <div>
+            <h1 class="text-2xl font-bold text-slate-800">Entity Dossier: Acme Solutions Inc.</h1>
+            <p class="text-sm text-slate-400 mt-1">Entities / Acme Solutions Inc.</p>
+          </div>
+
+          <div class="rounded-xl p-8 text-white flex flex-wrap items-center justify-between gap-6 bg-[#546e7a]">
+            <div class="flex items-center gap-6">
+              <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center text-slate-800 text-4xl font-bold">A</div>
+              <div>
+                <h2 class="text-3xl font-bold">Acme Solutions Inc.</h2>
+                <p class="text-slate-300 font-medium">Technology Providers</p>
+                <div class="mt-2 space-y-1 text-sm text-slate-300">
+                  <div>www.acmesolutions.com</div>
+                  <div>San Francisco, CA</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="bg-[#f0f5ff] rounded-xl p-4 min-w-[180px]"><span class="text-sm font-semibold text-slate-800">Quotation: Sent</span><p class="text-xs text-slate-500 mt-1">(Pending Review)</p></div>
+              <div class="bg-[#e6f7ed] rounded-xl p-4 min-w-[180px]"><span class="text-sm font-semibold text-slate-800">Sample: Requested</span><p class="text-xs text-slate-500 mt-1">(in Transit)</p></div>
+              <div class="bg-[#fff9e6] rounded-xl p-4 min-w-[180px]"><span class="text-sm font-semibold text-slate-800">Registration: Pending</span><p class="text-xs text-slate-500 mt-1">(Doc. Submitted)</p></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-12 gap-6">
+            <div class="col-span-3 space-y-6">
+              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Contacts</h3><div class="space-y-3 text-sm text-slate-700"><p>Jane Doe · Primary Contact</p><p>John Smith · Sales Lead</p><p>Gain Barry · Sales Lead</p></div></section>
+              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Active Deals</h3><div class="space-y-3 text-sm"><div class="flex justify-between"><span>Q3 Pilot Project</span><strong>$15,000</strong></div><div class="flex justify-between"><span>Expansion Plan</span><strong>$50,000</strong></div><div class="flex justify-between"><span>Device Bundle</span><strong>$20,000</strong></div></div></section>
+            </div>
+            <div class="col-span-6"><section class="bg-white rounded-xl p-8 custom-shadow min-h-full"><h3 class="text-lg font-bold text-slate-800 mb-6">Interaction Timeline</h3><div class="space-y-4 text-sm"><div class="p-4 rounded-xl bg-blue-50 border border-blue-100">Email from Jane Doe · Today, 10:45 AM</div><div class="p-4 rounded-xl bg-slate-50 border border-slate-100">Call Log · Yesterday, 2:30 PM</div><div class="p-4 rounded-xl bg-yellow-50 border border-yellow-100">Note · Yesterday, 11:00 AM</div></div></section></div>
+            <div class="col-span-3 space-y-6">
+              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Pinned Notes</h3><div class="space-y-3 text-sm text-slate-700"><p>Preferred shipping method is FedEx.</p><p>Decision maker on leave next week.</p></div></section>
+              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Next Actions</h3><ul class="space-y-2 text-sm text-slate-700"><li>Send updated proposal</li><li>Follow up on sample feedback</li><li>Schedule technical demo</li></ul></section>
+            </div>
+          </div>
+        </div>
+      `,
+      deals: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Deals Pipeline</h1><p class="text-sm text-slate-400 mt-1">Pipeline / Active deals</p></div>
+          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100">
+            <div class="grid grid-cols-4 gap-4 text-sm">
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Lead</p><p class="text-xl font-semibold text-slate-800">9</p></div>
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Contacted</p><p class="text-xl font-semibold text-slate-800">6</p></div>
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Negotiation</p><p class="text-xl font-semibold text-slate-800">3</p></div>
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Won</p><p class="text-xl font-semibold text-slate-800">4</p></div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl custom-shadow border border-slate-100 overflow-hidden">
+            <table class="w-full text-sm"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3 text-left">Company</th><th class="p-3 text-left">Country</th><th class="p-3 text-left">Stage</th><th class="p-3 text-left">Value</th></tr></thead><tbody>
+            <tr class="border-t"><td class="p-3">KL Wellness</td><td class="p-3">Malaysia</td><td class="p-3">Negotiation</td><td class="p-3">$42,000</td></tr>
+            <tr class="border-t"><td class="p-3">Dubai Derma</td><td class="p-3">UAE</td><td class="p-3">Contacted</td><td class="p-3">$58,000</td></tr>
+            <tr class="border-t"><td class="p-3">Bangkok Clinic</td><td class="p-3">Thailand</td><td class="p-3">Lead</td><td class="p-3">$21,000</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      `,
+      tasks: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Task Board</h1><p class="text-sm text-slate-400 mt-1">Tasks / Weekly execution</p></div>
+          <div class="grid md:grid-cols-3 gap-4">
+            ${['Today','This Week','Waiting'].map((col, idx) => `
+              <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
+                <h3 class="font-semibold text-slate-800 mb-3">${col}</h3>
+                <ul class="space-y-2 text-sm text-slate-700">
+                  <li>• ${[['Send NDA to partner','Check RF sample status'],['Prepare quote revision','Finalize distributor terms'],['Await legal review','Await sample result']][idx][0]}</li>
+                  <li>• ${[['Follow-up with KL','Update pipeline notes'],['Book demo call','Update pricing sheet'],['Await PO confirmation','Await customs docs']][idx][1]}</li>
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `,
+      activity: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Activity Feed</h1><p class="text-sm text-slate-400 mt-1">Activity / Recent touchpoints</p></div>
+          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100 space-y-4 text-sm">
+            <div class="border-b pb-3">10:45 AM · Email sent to Acme Solutions about updated quotation.</div>
+            <div class="border-b pb-3">09:20 AM · Follow-up call logged with Dubai Derma.</div>
+            <div class="border-b pb-3">Yesterday · Sample shipment status updated to in transit.</div>
+            <div>Yesterday · New partner note added for Thailand clinic network.</div>
+          </div>
+        </div>
+      `,
+      documents: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Documents</h1><p class="text-sm text-slate-400 mt-1">Reports / Files and templates</p></div>
+          <div class="bg-white rounded-xl custom-shadow border border-slate-100 overflow-hidden">
+            <table class="w-full text-sm"><thead class="bg-slate-50"><tr><th class="p-3 text-left">Name</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Updated</th><th class="p-3 text-left">Owner</th></tr></thead><tbody>
+              <tr class="border-t"><td class="p-3">Distributor Agreement v4</td><td class="p-3">PDF</td><td class="p-3">2026-04-21</td><td class="p-3">Jane</td></tr>
+              <tr class="border-t"><td class="p-3">Pricing Sheet APAC</td><td class="p-3">XLSX</td><td class="p-3">2026-04-20</td><td class="p-3">Jane</td></tr>
+              <tr class="border-t"><td class="p-3">Sample Request Form</td><td class="p-3">DOCX</td><td class="p-3">2026-04-18</td><td class="p-3">Ops</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      `
+    };
+
+    function renderCurrentView() {
+      const viewRoot = document.getElementById('viewRoot');
+      const template = viewTemplates[appState.currentView] || viewTemplates.overview;
+      viewRoot.innerHTML = template();
+      updateSidebarActiveState();
     }
 
-    function closeDraftingTable() {
-      panel.classList.add('translate-x-full');
-      backdrop.classList.add('hidden');
-    }
-
-    openBtn.addEventListener('click', openDraftingTable);
-    closeBtn.addEventListener('click', closeDraftingTable);
-    cancelBtn.addEventListener('click', closeDraftingTable);
-    backdrop.addEventListener('click', closeDraftingTable);
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        tabs.forEach((btn) => {
-          btn.classList.remove('bg-blue-600', 'text-white');
-          btn.classList.add('bg-slate-100', 'text-slate-600');
-        });
-
-        tab.classList.remove('bg-slate-100', 'text-slate-600');
-        tab.classList.add('bg-blue-600', 'text-white');
-
-        const map = {
-          note: 'Writing: Note',
-          task: 'Writing: Task',
-          call: 'Writing: Call Log',
-          follow: 'Writing: Follow-up'
-        };
-
-        typeLabel.textContent = map[tab.dataset.type] || 'Writing: Note';
+    function updateSidebarActiveState() {
+      const items = document.querySelectorAll('.sidebar-item');
+      items.forEach((item) => {
+        const isActive = item.dataset.view === appState.currentView;
+        item.classList.toggle('bg-[#e0ebff]', isActive);
+        item.classList.toggle('text-blue-700', isActive);
+        item.classList.toggle('font-semibold', isActive);
+        item.classList.toggle('text-slate-600', !isActive);
+        item.classList.toggle('font-medium', !isActive);
       });
+    }
+
+    function setupViewRouter() {
+      document.getElementById('sidebarNav').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-view]');
+        if (!button) return;
+        appState.currentView = button.dataset.view;
+        renderCurrentView();
+      });
+    }
+
+    function setupDraftingPanel() {
+      const openBtn = document.getElementById('openDraftingTableBtn');
+      const closeBtn = document.getElementById('closeDraftingTableBtn');
+      const cancelBtn = document.getElementById('cancelDraftingBtn');
+      const panel = document.getElementById('draftingPanel');
+      const backdrop = document.getElementById('draftingBackdrop');
+      const tabs = document.querySelectorAll('.draft-tab');
+      const typeLabel = document.getElementById('draftTypeLabel');
+
+      function openDraftingTable() {
+        panel.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+      }
+
+      function closeDraftingTable() {
+        panel.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+
+      openBtn.addEventListener('click', openDraftingTable);
+      closeBtn.addEventListener('click', closeDraftingTable);
+      cancelBtn.addEventListener('click', closeDraftingTable);
+      backdrop.addEventListener('click', closeDraftingTable);
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((btn) => {
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-slate-100', 'text-slate-600');
+          });
+
+          tab.classList.remove('bg-slate-100', 'text-slate-600');
+          tab.classList.add('bg-blue-600', 'text-white');
+
+          const map = {
+            note: 'Writing: Note',
+            task: 'Writing: Task',
+            call: 'Writing: Call Log',
+            follow: 'Writing: Follow-up'
+          };
+
+          typeLabel.textContent = map[tab.dataset.type] || 'Writing: Note';
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupViewRouter();
+      setupDraftingPanel();
+      renderCurrentView();
     });
   </script>
 </body>
