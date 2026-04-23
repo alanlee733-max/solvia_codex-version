@@ -1,3 +1,10 @@
+/*
+  REFERENCE / LEGACY CANDIDATE NOTICE
+  - This file is currently a reference/legacy candidate and is not the active runtime source.
+  - Active runtime behavior currently lives in index.html.
+  - Logic here may be selectively migrated later after the app shell stabilizes.
+*/
+
 // Sample Deals Data (used on first load only)
 const sampleDeals = [
     {
