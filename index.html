@@ -140,7 +140,90 @@
   </aside>
 
   <script>
-    const appState = { currentView: 'partners' };
+    const partnersData = [
+      {
+        id: 101,
+        company: 'Acme Solutions Inc.',
+        country: 'United States',
+        contact: 'Jane Doe',
+        email: 'jane@acmesolutions.com',
+        website: 'www.acmesolutions.com',
+        status: 'Active',
+        priority: 'High',
+        productFocus: ['Skin Booster', 'HA Filler'],
+        lastContact: '2026-04-22',
+        nextAction: 'Send revised distributor quote',
+        overview: 'Key strategic partner handling premium dermatology clinics on the west coast.',
+        orderHistory: ['Mar 2026 · $42,000', 'Feb 2026 · $36,000', 'Jan 2026 · $31,000'],
+        contactLog: ['2026-04-22 · Pricing review call', '2026-04-18 · Follow-up email on samples'],
+        samples: ['Skin Booster Batch SB-12 · Delivered', 'HA Filler Trial Pack · In transit'],
+        notes: 'Prioritizes faster replenishment cycles and co-marketing support.'
+      },
+      {
+        id: 102,
+        company: 'Bangkok Derma Trade',
+        country: 'Thailand',
+        contact: 'Pim Rattanakorn',
+        email: 'pim@bangkokderma.co.th',
+        website: 'bangkokderma.co.th',
+        status: 'Prospect',
+        priority: 'Medium',
+        productFocus: ['RF Device', 'Body Contouring'],
+        lastContact: '2026-04-20',
+        nextAction: 'Share market launch deck',
+        overview: 'Potential growth partner targeting private hospital groups in Bangkok.',
+        orderHistory: ['No confirmed orders yet'],
+        contactLog: ['2026-04-20 · Introductory call', '2026-04-15 · Product catalog shared'],
+        samples: ['RF Device brochure requested'],
+        notes: 'Interested in a phased rollout starting with two flagship clinics.'
+      },
+      {
+        id: 103,
+        company: 'Dubai Aesthetics Hub',
+        country: 'UAE',
+        contact: 'Omar Al Fahim',
+        email: 'omar@dubaiaestheticshub.ae',
+        website: 'dubaiaestheticshub.ae',
+        status: 'On Hold',
+        priority: 'High',
+        productFocus: ['Laser Device', 'HA Filler'],
+        lastContact: '2026-04-19',
+        nextAction: 'Resolve registration checklist',
+        overview: 'Large-volume prospect currently paused pending regulatory approval.',
+        orderHistory: ['Feb 2026 · $58,000 (device pre-order)'],
+        contactLog: ['2026-04-19 · Compliance document review', '2026-04-10 · Legal scope alignment'],
+        samples: ['Laser consumable kit · Pending customs'],
+        notes: 'Can reopen quickly once registration documents are finalized.'
+      },
+      {
+        id: 104,
+        company: 'KL Wellness Distribution',
+        country: 'Malaysia',
+        contact: 'Nur Aisyah',
+        email: 'nur@klwellness.my',
+        website: 'klwellness.my',
+        status: 'Active',
+        priority: 'Low',
+        productFocus: ['Skin Booster'],
+        lastContact: '2026-04-21',
+        nextAction: 'Book quarterly planning sync',
+        overview: 'Reliable repeat-order partner serving mid-size medspas in Malaysia.',
+        orderHistory: ['Mar 2026 · $19,000', 'Jan 2026 · $14,000'],
+        contactLog: ['2026-04-21 · Order forecast alignment', '2026-04-12 · MOQ update sent'],
+        samples: ['Skin Booster v2 leaflet shared'],
+        notes: 'Stable performance, but lower urgency compared to other markets.'
+      }
+    ];
+
+    const appState = {
+      currentView: 'partners',
+      selectedPartnerId: partnersData[0].id,
+      activePartnerTab: 'overview',
+      partnerSearch: '',
+      partnerCountry: '',
+      partnerStatus: ''
+    };
+
     const viewMeta = {
       overview: { title: 'Overview', subtitle: 'Command Center / Snapshot' },
       partners: { title: 'Entity Dossier: Acme Solutions Inc.', subtitle: 'Entities / Acme Solutions Inc.' },
@@ -149,6 +232,128 @@
       activity: { title: 'Activity Feed', subtitle: 'Activity / Recent touchpoints' },
       documents: { title: 'Documents', subtitle: 'Reports / Files and templates' }
     };
+
+    function getFilteredPartners() {
+      return partnersData.filter((partner) => {
+        const searchTerm = appState.partnerSearch.toLowerCase().trim();
+        const matchesSearch = !searchTerm
+          || partner.company.toLowerCase().includes(searchTerm)
+          || partner.country.toLowerCase().includes(searchTerm)
+          || partner.contact.toLowerCase().includes(searchTerm)
+          || partner.email.toLowerCase().includes(searchTerm);
+        const matchesCountry = !appState.partnerCountry || partner.country === appState.partnerCountry;
+        const matchesStatus = !appState.partnerStatus || partner.status === appState.partnerStatus;
+        return matchesSearch && matchesCountry && matchesStatus;
+      });
+    }
+
+    function ensureSelectedPartner(filteredPartners) {
+      if (!filteredPartners.length) return null;
+      const stillVisible = filteredPartners.some((partner) => partner.id === appState.selectedPartnerId);
+      if (!stillVisible) {
+        appState.selectedPartnerId = filteredPartners[0].id;
+      }
+      return filteredPartners.find((partner) => partner.id === appState.selectedPartnerId) || filteredPartners[0];
+    }
+
+    function renderPartnerDetailBody(partner) {
+      if (!partner) {
+        return '<p class="text-sm text-slate-500">No partner matches current filters.</p>';
+      }
+
+      if (appState.activePartnerTab === 'orders') {
+        return `<ul class="space-y-2 text-sm text-slate-700">${partner.orderHistory.map((item) => `<li>• ${item}</li>`).join('')}</ul>`;
+      }
+      if (appState.activePartnerTab === 'contact') {
+        return `<ul class="space-y-2 text-sm text-slate-700">${partner.contactLog.map((item) => `<li>• ${item}</li>`).join('')}</ul>`;
+      }
+      if (appState.activePartnerTab === 'samples') {
+        return `<ul class="space-y-2 text-sm text-slate-700">${partner.samples.map((item) => `<li>• ${item}</li>`).join('')}</ul>`;
+      }
+      if (appState.activePartnerTab === 'notes') {
+        return `<p class="text-sm text-slate-700">${partner.notes}</p>`;
+      }
+
+      return `
+        <p class="text-sm text-slate-700 mb-4">${partner.overview}</p>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="bg-slate-50 rounded-lg p-3"><p class="text-slate-500">Contact</p><p class="font-medium text-slate-800">${partner.contact}</p></div>
+          <div class="bg-slate-50 rounded-lg p-3"><p class="text-slate-500">Email</p><p class="font-medium text-slate-800">${partner.email}</p></div>
+          <div class="bg-slate-50 rounded-lg p-3"><p class="text-slate-500">Website</p><p class="font-medium text-slate-800">${partner.website}</p></div>
+          <div class="bg-slate-50 rounded-lg p-3"><p class="text-slate-500">Next Action</p><p class="font-medium text-slate-800">${partner.nextAction}</p></div>
+        </div>
+      `;
+    }
+
+    function renderPartnersView() {
+      const filteredPartners = getFilteredPartners();
+      const selectedPartner = ensureSelectedPartner(filteredPartners);
+      const countries = [...new Set(partnersData.map((partner) => partner.country))];
+      const statuses = [...new Set(partnersData.map((partner) => partner.status))];
+      const activeCount = partnersData.filter((partner) => partner.status === 'Active').length;
+      const needsAction = partnersData.filter((partner) => partner.priority === 'High').length;
+
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Total Partners</p><p class="text-2xl font-bold text-slate-800 mt-1">${partnersData.length}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Active</p><p class="text-2xl font-bold text-slate-800 mt-1">${activeCount}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">High Priority</p><p class="text-2xl font-bold text-slate-800 mt-1">${needsAction}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Visible Rows</p><p class="text-2xl font-bold text-slate-800 mt-1">${filteredPartners.length}</p></div>
+          </div>
+
+          <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input id="partnerSearchInput" type="text" value="${appState.partnerSearch}" placeholder="Search company, country, contact..." class="w-full border border-slate-200 rounded-md text-sm" />
+            <select id="partnerCountrySelect" class="w-full border border-slate-200 rounded-md text-sm">
+              <option value="">All Countries</option>
+              ${countries.map((country) => `<option value="${country}" ${appState.partnerCountry === country ? 'selected' : ''}>${country}</option>`).join('')}
+            </select>
+            <select id="partnerStatusSelect" class="w-full border border-slate-200 rounded-md text-sm">
+              <option value="">All Status</option>
+              ${statuses.map((status) => `<option value="${status}" ${appState.partnerStatus === status ? 'selected' : ''}>${status}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="grid grid-cols-12 gap-6">
+            <div class="col-span-12 lg:col-span-8 bg-white rounded-xl custom-shadow border border-slate-100 overflow-hidden">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                  <tr>
+                    <th class="p-3 text-left">Company</th><th class="p-3 text-left">Country</th><th class="p-3 text-left">Contact</th>
+                    <th class="p-3 text-left">Status</th><th class="p-3 text-left">Priority</th><th class="p-3 text-left">Last Contact</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filteredPartners.length ? filteredPartners.map((partner) => `
+                    <tr data-partner-id="${partner.id}" class="partner-row border-t cursor-pointer ${partner.id === appState.selectedPartnerId ? 'bg-blue-50' : 'hover:bg-slate-50'}">
+                      <td class="p-3"><p class="font-medium text-slate-800">${partner.company}</p><p class="text-xs text-slate-500">${partner.email}</p></td>
+                      <td class="p-3">${partner.country}</td>
+                      <td class="p-3">${partner.contact}</td>
+                      <td class="p-3">${partner.status}</td>
+                      <td class="p-3">${partner.priority}</td>
+                      <td class="p-3">${partner.lastContact}</td>
+                    </tr>
+                  `).join('') : '<tr><td colspan="6" class="p-4 text-center text-slate-500">No partners found.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="col-span-12 lg:col-span-4 bg-white rounded-xl p-4 custom-shadow border border-slate-100">
+              <h3 class="text-sm font-semibold text-slate-800">${selectedPartner ? selectedPartner.company : 'Partner Detail'}</h3>
+              <p class="text-xs text-slate-500 mb-3">${selectedPartner ? `${selectedPartner.country} · ${selectedPartner.status}` : 'No selection'}</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                ${['overview', 'orders', 'contact', 'samples', 'notes'].map((tab) => `
+                  <button data-partner-tab="${tab}" class="partner-tab px-2 py-1 rounded-full text-xs ${appState.activePartnerTab === tab ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}">${tab}</button>
+                `).join('')}
+              </div>
+              <p class="text-xs text-slate-500 mb-2">Product Focus: ${selectedPartner ? selectedPartner.productFocus.join(', ') : '-'}</p>
+              <p class="text-xs text-slate-500 mb-4">Next Action: ${selectedPartner ? selectedPartner.nextAction : '-'}</p>
+              <div>${renderPartnerDetailBody(selectedPartner)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
     const viewTemplates = {
       overview: () => `
@@ -175,45 +380,7 @@
           </div>
         </div>
       `,
-      partners: () => `
-        <div class="space-y-6">
-          <div>
-            <h1 class="text-2xl font-bold text-slate-800">Entity Dossier: Acme Solutions Inc.</h1>
-            <p class="text-sm text-slate-400 mt-1">Entities / Acme Solutions Inc.</p>
-          </div>
-
-          <div class="rounded-xl p-8 text-white flex flex-wrap items-center justify-between gap-6 bg-[#546e7a]">
-            <div class="flex items-center gap-6">
-              <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center text-slate-800 text-4xl font-bold">A</div>
-              <div>
-                <h2 class="text-3xl font-bold">Acme Solutions Inc.</h2>
-                <p class="text-slate-300 font-medium">Technology Providers</p>
-                <div class="mt-2 space-y-1 text-sm text-slate-300">
-                  <div>www.acmesolutions.com</div>
-                  <div>San Francisco, CA</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div class="bg-[#f0f5ff] rounded-xl p-4 min-w-[180px]"><span class="text-sm font-semibold text-slate-800">Quotation: Sent</span><p class="text-xs text-slate-500 mt-1">(Pending Review)</p></div>
-              <div class="bg-[#e6f7ed] rounded-xl p-4 min-w-[180px]"><span class="text-sm font-semibold text-slate-800">Sample: Requested</span><p class="text-xs text-slate-500 mt-1">(in Transit)</p></div>
-              <div class="bg-[#fff9e6] rounded-xl p-4 min-w-[180px]"><span class="text-sm font-semibold text-slate-800">Registration: Pending</span><p class="text-xs text-slate-500 mt-1">(Doc. Submitted)</p></div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-12 gap-6">
-            <div class="col-span-3 space-y-6">
-              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Contacts</h3><div class="space-y-3 text-sm text-slate-700"><p>Jane Doe · Primary Contact</p><p>John Smith · Sales Lead</p><p>Gain Barry · Sales Lead</p></div></section>
-              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Active Deals</h3><div class="space-y-3 text-sm"><div class="flex justify-between"><span>Q3 Pilot Project</span><strong>$15,000</strong></div><div class="flex justify-between"><span>Expansion Plan</span><strong>$50,000</strong></div><div class="flex justify-between"><span>Device Bundle</span><strong>$20,000</strong></div></div></section>
-            </div>
-            <div class="col-span-6"><section class="bg-white rounded-xl p-8 custom-shadow min-h-full"><h3 class="text-lg font-bold text-slate-800 mb-6">Interaction Timeline</h3><div class="space-y-4 text-sm"><div class="p-4 rounded-xl bg-blue-50 border border-blue-100">Email from Jane Doe · Today, 10:45 AM</div><div class="p-4 rounded-xl bg-slate-50 border border-slate-100">Call Log · Yesterday, 2:30 PM</div><div class="p-4 rounded-xl bg-yellow-50 border border-yellow-100">Note · Yesterday, 11:00 AM</div></div></section></div>
-            <div class="col-span-3 space-y-6">
-              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Pinned Notes</h3><div class="space-y-3 text-sm text-slate-700"><p>Preferred shipping method is FedEx.</p><p>Decision maker on leave next week.</p></div></section>
-              <section class="bg-white rounded-xl p-6 custom-shadow"><h3 class="font-bold text-slate-800 mb-4">Next Actions</h3><ul class="space-y-2 text-sm text-slate-700"><li>Send updated proposal</li><li>Follow up on sample feedback</li><li>Schedule technical demo</li></ul></section>
-            </div>
-          </div>
-        </div>
-      `,
+      partners: () => renderPartnersView(),
       deals: () => `
         <div class="space-y-6">
           <div><h1 class="text-2xl font-bold text-slate-800">Deals Pipeline</h1><p class="text-sm text-slate-400 mt-1">Pipeline / Active deals</p></div>
@@ -281,6 +448,9 @@
       viewRoot.innerHTML = template();
       updateHeaderContext();
       updateSidebarActiveState();
+      if (appState.currentView === 'partners') {
+        setupPartnersViewInteractions();
+      }
     }
 
     function updateHeaderContext() {
@@ -306,7 +476,51 @@
         const button = event.target.closest('[data-view]');
         if (!button) return;
         appState.currentView = button.dataset.view;
+        if (appState.currentView !== 'partners') {
+          appState.activePartnerTab = 'overview';
+        }
         renderCurrentView();
+      });
+    }
+
+    function setupPartnersViewInteractions() {
+      const searchInput = document.getElementById('partnerSearchInput');
+      const countrySelect = document.getElementById('partnerCountrySelect');
+      const statusSelect = document.getElementById('partnerStatusSelect');
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (event) => {
+          appState.partnerSearch = event.target.value;
+          renderCurrentView();
+        });
+      }
+
+      if (countrySelect) {
+        countrySelect.addEventListener('change', (event) => {
+          appState.partnerCountry = event.target.value;
+          renderCurrentView();
+        });
+      }
+
+      if (statusSelect) {
+        statusSelect.addEventListener('change', (event) => {
+          appState.partnerStatus = event.target.value;
+          renderCurrentView();
+        });
+      }
+
+      document.querySelectorAll('.partner-row').forEach((row) => {
+        row.addEventListener('click', () => {
+          appState.selectedPartnerId = Number(row.dataset.partnerId);
+          renderCurrentView();
+        });
+      });
+
+      document.querySelectorAll('.partner-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          appState.activePartnerTab = tab.dataset.partnerTab;
+          renderCurrentView();
+        });
       });
     }
 
