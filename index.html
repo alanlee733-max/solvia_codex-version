@@ -1,196 +1,512 @@
 <!DOCTYPE html>
+<!--
+  SOURCE-OF-TRUTH NOTICE
+  - This index.html file is the current canonical app shell and runtime entry point.
+  - New UI/runtime work should be implemented here first.
+  - Other files (script.js, style.css) are currently reference/legacy candidates for selective migration later.
+-->
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales CRM Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alan CRM - App Shell</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+    .custom-shadow {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+    .timeline-line::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: #cbd5e1;
+      z-index: 0;
+    }
+  </style>
 </head>
-<body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="brand">
-                    <div class="brand-icon"><i class="ph-fill ph-hexagon"></i></div>
-                    <span class="brand-name">CRM Base</span>
-                </div>
-            </div>
-            <div class="sidebar-nav">
-                <div class="nav-section">
-                    <span class="nav-section-title">Workspace</span>
-                    <a href="#" class="nav-item"><i class="ph ph-magnifying-glass"></i> Search</a>
-                    <a href="#" class="nav-item"><i class="ph ph-bell"></i> Notifications</a>
-                    <a href="#" class="nav-item"><i class="ph ph-check-square"></i> Tasks</a>
-                    <a href="#" class="nav-item"><i class="ph ph-envelope-simple"></i> Emails</a>
-                </div>
-                <div class="nav-section">
-                    <span class="nav-section-title">Objects</span>
-                    <a href="#" class="nav-item"><i class="ph ph-buildings"></i> Companies</a>
-                    <a href="#" class="nav-item"><i class="ph ph-users"></i> People</a>
-                    <a href="#" class="nav-item active"><i class="ph ph-briefcase"></i> Deals</a>
-                </div>
-                <div class="nav-section">
-                    <span class="nav-section-title">Views</span>
-                    <a href="#" class="nav-item"><i class="ph ph-globe"></i> APAC Region</a>
-                    <a href="#" class="nav-item"><i class="ph ph-star"></i> Priority Leads</a>
-                </div>
-            </div>
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="avatar">JS</div>
-                    <span class="username">John Sales</span>
-                </div>
-            </div>
-        </aside>
+<body class="h-screen overflow-hidden">
+  <div class="flex h-full">
+    <aside class="w-60 bg-[#f8fafc] border-r border-slate-200 flex flex-col shrink-0">
+      <div class="h-16 border-b border-slate-200 px-4 flex items-center">
+        <div class="flex items-center gap-3">
+          <img src="src/assets/logo/alan-crm-logo.png" alt="Alan CRM logo" class="w-9 h-9 rounded-md object-contain bg-white" />
+          <span class="font-bold text-base text-slate-800">Alan CRM</span>
+        </div>
+      </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Header -->
-            <header class="top-header">
-                <div class="header-breadcrumb">
-                    <span class="breadcrumb-item">Deals</span>
-                    <i class="ph ph-caret-right"></i>
-                    <span class="breadcrumb-item active">APAC Dashboard</span>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-secondary"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
-                    <button class="btn btn-primary"><i class="ph ph-plus"></i> New Deal</button>
-                </div>
-            </header>
+      <div class="p-4 pt-5">
+        <nav class="space-y-1" id="sidebarNav">
+          <button data-view="overview" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Dashboard
+          </button>
+          <button data-view="partners" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-semibold bg-[#e0ebff] text-blue-700">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Company
+          </button>
+          <button data-view="deals" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Deals
+          </button>
+          <button data-view="tasks" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Tasks
+          </button>
+          <button data-view="activity" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Timeline
+          </button>
+          <button data-view="documents" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Reports
+          </button>
+        </nav>
+      </div>
 
-            <div class="dashboard-scroll-area">
-                <!-- Dashboard Layout -->
-                <div class="dashboard-grid">
-                    
-                    <!-- Summary Cards -->
-                    <div class="summary-cards">
-                        <div class="card summary-card">
-                            <div class="card-title">Total Pipeline</div>
-                            <div class="card-value">$2.4M</div>
-                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +12% this month</div>
-                        </div>
-                        <div class="card summary-card">
-                            <div class="card-title">Deals Won</div>
-                            <div class="card-value">18</div>
-                            <div class="card-trend positive"><i class="ph ph-trend-up"></i> +4 this month</div>
-                        </div>
-                        <div class="card summary-card">
-                            <div class="card-title">Avg Deal Size</div>
-                            <div class="card-value">$45k</div>
-                            <div class="card-trend neutral"><i class="ph ph-minus"></i> No change</div>
-                        </div>
-                    </div>
+      <div class="mt-auto border-t border-slate-100 p-4 space-y-4">
+        <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          Settings
+        </a>
+        <div class="flex items-center gap-3 px-3 py-2">
+          <img alt="Jane Doe" class="w-8 h-8 rounded-full bg-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBig2JqTEWA2uSOd5y6N4Y1mOnuC4rS18HNus-hpsb5WbbRxLMVQ922cV4DUdqbxz1snOxjsd_ELuG-aH58qmA8SKvl5MDrO1diZT96814rFhbuOp3HiHb1bVSv6yoVTLhc9V2RX2xpP4PpTgOl73e01sviNTbCmqfTJh9NpA8pBqvrGQ93uQ8wzTmTvWKCcbX6pe6MSy2ztsT3N9n7x-axnTyvRzaA9C_nQLAi5uS3u44WRqiDubY-GkwMH9jHSm19_8s_AQW5dvs" />
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-slate-800 truncate">Jane Doe</p>
+          </div>
+        </div>
+        <button id="openDraftingTableBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">Open Drafting Table</button>
+      </div>
+    </aside>
 
-                    <div class="grid-row-2">
-                        <!-- Pipeline Section -->
-                        <div class="card pipeline-section">
-                            <div class="card-header">
-                                <h3>Pipeline Stages</h3>
-                                <button class="btn-icon"><i class="ph ph-dots-three"></i></button>
-                            </div>
-                            <div class="pipeline-funnel">
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Lead</span>
-                                        <span class="stage-count">45</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 100%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Contacted</span>
-                                        <span class="stage-count">32</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 71%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Negotiation</span>
-                                        <span class="stage-count">14</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 31%"></div>
-                                </div>
-                                <div class="funnel-stage">
-                                    <div class="stage-info">
-                                        <span class="stage-name">Won</span>
-                                        <span class="stage-count">8</span>
-                                    </div>
-                                    <div class="stage-bar" style="width: 17%"></div>
-                                </div>
-                            </div>
-                        </div>
+    <div class="flex-1 min-w-0 flex flex-col h-full">
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
+        <div>
+          <p id="headerTitle" class="text-sm font-semibold text-slate-800">Entity Dossier: Acme Solutions Inc.</p>
+          <p id="headerSubtitle" class="text-xs text-slate-400">Company / Acme Solutions Inc.</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+              <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </span>
+            <input class="block w-64 pl-10 pr-3 py-1.5 border border-slate-200 rounded-lg bg-slate-50 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Search" type="text" />
+          </div>
+          <div class="relative">
+            <svg class="w-6 h-6 text-slate-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+          </div>
+          <img alt="User" class="w-8 h-8 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfVwGDj59S_tq5wjxNpEUd6_GCoy8i5nPKhvU1nEjrEVdg8kgF3U3CW_jsXoYg2jHSRBjWRGkRKL_BuKrWA6r4nApZ5t5Lgnl9_GbMjYvwsCqFYqgvhTgHotaWWd-NPTCFAXOAjcFYooZZovzwqPmygpd46CmxEOCV3Cf3YpfrW1gQCtbhuVLPWkshSlmZSqWJwAIe6QJlN-PGSknGLFQUNqXt7_1HAJ-rtfbPBWkI5JfePIc-S0GVeOsRTvMoyVk50v66-5S46ck" />
+        </div>
+      </header>
 
-                        <!-- Next Actions Section -->
-                        <div class="card next-actions">
-                            <div class="card-header">
-                                <h3>Next Actions</h3>
-                                <button class="btn-icon"><i class="ph ph-dots-three"></i></button>
-                            </div>
-                            <div class="action-list">
-                                <div class="action-item">
-                                    <input type="checkbox" class="action-check">
-                                    <div class="action-details">
-                                        <p class="action-title">Send NDA to Bangkok Clinic</p>
-                                        <p class="action-meta">Due Today • Skin Booster</p>
-                                    </div>
-                                </div>
-                                <div class="action-item">
-                                    <input type="checkbox" class="action-check">
-                                    <div class="action-details">
-                                        <p class="action-title">Follow up quote with KL Aesthetics</p>
-                                        <p class="action-meta">Due Tomorrow • HA Filler</p>
-                                    </div>
-                                </div>
-                                <div class="action-item">
-                                    <input type="checkbox" class="action-check">
-                                    <div class="action-details">
-                                        <p class="action-title">Product demo: RF Device</p>
-                                        <p class="action-meta">Due Friday • UAE Medical Group</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Active Deals Table -->
-                    <div class="card data-table-section">
-                        <div class="card-header">
-                            <h3>Active Deals</h3>
-                            <div class="table-actions">
-                                <div class="search-box">
-                                    <i class="ph ph-magnifying-glass"></i>
-                                    <input type="text" id="dealSearch" placeholder="Search deals...">
-                                </div>
-                                <button class="btn btn-secondary"><i class="ph ph-sliders-horizontal"></i> Filter</button>
-                            </div>
-                        </div>
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Company</th>
-                                        <th>Country</th>
-                                        <th>Product Interest</th>
-                                        <th>Stage</th>
-                                        <th>Priority</th>
-                                        <th>Value</th>
-                                        <th>Last Active</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dealsTableBody">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </main>
+      <main id="viewRoot" class="flex-1 overflow-y-auto p-8"></main>
     </div>
-    <script src="script.js"></script>
+  </div>
+
+  <div id="draftingBackdrop" class="fixed inset-0 bg-slate-900/20 hidden"></div>
+  <aside id="draftingPanel" class="fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-slate-200 shadow-xl transform translate-x-full transition-transform duration-200 ease-out z-30 flex flex-col">
+    <div class="h-16 border-b border-slate-200 px-5 flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-slate-800">Drafting Table</h2>
+      <button id="closeDraftingTableBtn" class="text-slate-500 hover:text-slate-700">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+    </div>
+    <div class="p-5 border-b border-slate-100">
+      <div class="grid grid-cols-4 gap-2 text-xs">
+        <button class="draft-tab px-2 py-2 rounded-md bg-blue-600 text-white" data-type="note">Note</button>
+        <button class="draft-tab px-2 py-2 rounded-md bg-slate-100 text-slate-600" data-type="task">Task</button>
+        <button class="draft-tab px-2 py-2 rounded-md bg-slate-100 text-slate-600" data-type="call">Call Log</button>
+        <button class="draft-tab px-2 py-2 rounded-md bg-slate-100 text-slate-600" data-type="follow">Follow-up</button>
+      </div>
+    </div>
+    <div class="p-5 space-y-4 flex-1 overflow-y-auto">
+      <p id="draftTypeLabel" class="text-sm font-medium text-slate-700">Writing: Note</p>
+      <input type="text" class="w-full border border-slate-200 rounded-md text-sm" placeholder="Title" />
+      <textarea class="w-full min-h-[220px] border border-slate-200 rounded-md text-sm" placeholder="Write details..."></textarea>
+      <div class="flex justify-end gap-2">
+        <button id="cancelDraftingBtn" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+        <button class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">Save Draft</button>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    const COMPANY_STORAGE_KEY = 'alan-crm-companies';
+
+    function loadCompaniesFromStorage() {
+      try {
+        const raw = localStorage.getItem(COMPANY_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveCompaniesToStorage(companies) {
+      localStorage.setItem(COMPANY_STORAGE_KEY, JSON.stringify(companies));
+    }
+
+    let companiesData = loadCompaniesFromStorage();
+
+    const appState = {
+      currentView: 'partners',
+      partnerSearch: '',
+      companyFormOpen: false
+    };
+
+    const viewMeta = {
+      overview: { title: 'Overview', subtitle: 'Command Center / Snapshot' },
+      partners: { title: 'Entity Dossier: Acme Solutions Inc.', subtitle: 'Company / Acme Solutions Inc.' },
+      deals: { title: 'Deals Pipeline', subtitle: 'Pipeline / Active deals' },
+      tasks: { title: 'Task Board', subtitle: 'Tasks / Weekly execution' },
+      activity: { title: 'Activity Feed', subtitle: 'Activity / Recent touchpoints' },
+      documents: { title: 'Documents', subtitle: 'Reports / Files and templates' }
+    };
+
+    function getFilteredCompanies() {
+      return companiesData.filter((partner) => {
+        const searchTerm = appState.partnerSearch.toLowerCase().trim();
+        const companyName = String(partner.companyName || '').toLowerCase();
+        const country = String(partner.country || '').toLowerCase();
+        const buyerName = String(partner.buyerName || '').toLowerCase();
+        const email = String(partner.email || '').toLowerCase();
+        const productCategory = String(partner.productCategory || '').toLowerCase();
+        return !searchTerm
+          || companyName.includes(searchTerm)
+          || country.includes(searchTerm)
+          || buyerName.includes(searchTerm)
+          || email.includes(searchTerm)
+          || productCategory.includes(searchTerm);
+      });
+    }
+
+    function renderPartnersView() {
+      const filteredPartners = getFilteredCompanies();
+
+      return `
+        <div class="space-y-6">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Total Companies</p><p class="text-2xl font-bold text-slate-800 mt-1">${companiesData.length}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Visible Rows</p><p class="text-2xl font-bold text-slate-800 mt-1">${filteredPartners.length}</p></div>
+          </div>
+
+          <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input id="partnerSearchInput" type="text" value="${appState.partnerSearch}" placeholder="Search company, country, contact..." class="w-full border border-slate-200 rounded-md text-sm" />
+            <button id="openCompanyFormBtn" class="w-full md:w-auto justify-self-start bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">Add Company</button>
+          </div>
+
+          ${appState.companyFormOpen ? `
+            <form id="companyForm" class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 space-y-4">
+              <p id="companyFormError" class="hidden text-sm text-red-600"></p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input name="companyName" type="text" placeholder="Company Name *" class="w-full border border-slate-200 rounded-md text-sm" required />
+                <input name="buyerName" type="text" placeholder="Buyer Name *" class="w-full border border-slate-200 rounded-md text-sm" required />
+                <input name="email" type="email" placeholder="Email" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="website" type="text" placeholder="Website" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="country" type="text" placeholder="Country" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="productCategory" type="text" placeholder="Product Category" class="w-full border border-slate-200 rounded-md text-sm" />
+              </div>
+              <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-24"></textarea>
+              <div class="flex gap-2 justify-end">
+                <button id="cancelCompanyFormBtn" type="button" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+                <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">Save</button>
+              </div>
+            </form>
+          ` : ''}
+
+          <div class="bg-white rounded-xl custom-shadow border border-slate-100 overflow-hidden">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                  <tr>
+                    <th class="p-3 text-left">Company</th>
+                    <th class="p-3 text-left">Buyer</th>
+                    <th class="p-3 text-left">Email</th>
+                    <th class="p-3 text-left">Website</th>
+                    <th class="p-3 text-left">Country</th>
+                    <th class="p-3 text-left">Product Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filteredPartners.length ? filteredPartners.map((partner) => `
+                    <tr class="border-t hover:bg-slate-50">
+                      <td class="p-3"><p class="font-medium text-slate-800">${partner.companyName || '-'}</p><p class="text-xs text-slate-500">${partner.notes || ''}</p></td>
+                      <td class="p-3">${partner.buyerName || '-'}</td>
+                      <td class="p-3">${partner.email || '-'}</td>
+                      <td class="p-3">${partner.website || '-'}</td>
+                      <td class="p-3">${partner.country || '-'}</td>
+                      <td class="p-3">${partner.productCategory || '-'}</td>
+                    </tr>
+                  `).join('') : '<tr><td colspan="6" class="p-4 text-center text-slate-500">No companies added yet.</td></tr>'}
+                </tbody>
+              </table>
+          </div>
+        </div>
+      `;
+    }
+
+    const viewTemplates = {
+      overview: () => `
+        <div class="space-y-6">
+          <div>
+            <h1 class="text-2xl font-bold text-slate-800">Overview</h1>
+            <p class="text-sm text-slate-400 mt-1">Command Center / Snapshot</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            ${['Open Deals', 'Pending Tasks', 'Partners Active', 'Revenue MTD'].map((item, i) => `
+              <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
+                <p class="text-sm text-slate-500">${item}</p>
+                <p class="text-2xl font-bold text-slate-800 mt-2">${['18', '7', '12', '$84K'][i]}</p>
+              </div>
+            `).join('')}
+          </div>
+          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100">
+            <h3 class="font-semibold text-slate-800 mb-3">Weekly Focus</h3>
+            <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
+              <li>Finalize 2 distributor quotes for UAE and Thailand.</li>
+              <li>Collect sample feedback from 3 partner clinics.</li>
+              <li>Review regulatory document checklist for new market onboarding.</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      partners: () => renderPartnersView(),
+      deals: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Deals Pipeline</h1><p class="text-sm text-slate-400 mt-1">Pipeline / Active deals</p></div>
+          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100">
+            <div class="grid grid-cols-4 gap-4 text-sm">
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Lead</p><p class="text-xl font-semibold text-slate-800">9</p></div>
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Contacted</p><p class="text-xl font-semibold text-slate-800">6</p></div>
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Negotiation</p><p class="text-xl font-semibold text-slate-800">3</p></div>
+              <div class="p-3 bg-slate-50 rounded-lg"><p class="text-slate-500">Won</p><p class="text-xl font-semibold text-slate-800">4</p></div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl custom-shadow border border-slate-100 overflow-hidden">
+            <table class="w-full text-sm"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3 text-left">Company</th><th class="p-3 text-left">Country</th><th class="p-3 text-left">Stage</th><th class="p-3 text-left">Value</th></tr></thead><tbody>
+            <tr class="border-t"><td class="p-3">KL Wellness</td><td class="p-3">Malaysia</td><td class="p-3">Negotiation</td><td class="p-3">$42,000</td></tr>
+            <tr class="border-t"><td class="p-3">Dubai Derma</td><td class="p-3">UAE</td><td class="p-3">Contacted</td><td class="p-3">$58,000</td></tr>
+            <tr class="border-t"><td class="p-3">Bangkok Clinic</td><td class="p-3">Thailand</td><td class="p-3">Lead</td><td class="p-3">$21,000</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      `,
+      tasks: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Task Board</h1><p class="text-sm text-slate-400 mt-1">Tasks / Weekly execution</p></div>
+          <div class="grid md:grid-cols-3 gap-4">
+            ${['Today','This Week','Waiting'].map((col, idx) => `
+              <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
+                <h3 class="font-semibold text-slate-800 mb-3">${col}</h3>
+                <ul class="space-y-2 text-sm text-slate-700">
+                  <li>• ${[['Send NDA to partner','Check RF sample status'],['Prepare quote revision','Finalize distributor terms'],['Await legal review','Await sample result']][idx][0]}</li>
+                  <li>• ${[['Follow-up with KL','Update pipeline notes'],['Book demo call','Update pricing sheet'],['Await PO confirmation','Await customs docs']][idx][1]}</li>
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `,
+      activity: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Activity Feed</h1><p class="text-sm text-slate-400 mt-1">Activity / Recent touchpoints</p></div>
+          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100 space-y-4 text-sm">
+            <div class="border-b pb-3">10:45 AM · Email sent to Acme Solutions about updated quotation.</div>
+            <div class="border-b pb-3">09:20 AM · Follow-up call logged with Dubai Derma.</div>
+            <div class="border-b pb-3">Yesterday · Sample shipment status updated to in transit.</div>
+            <div>Yesterday · New partner note added for Thailand clinic network.</div>
+          </div>
+        </div>
+      `,
+      documents: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Documents</h1><p class="text-sm text-slate-400 mt-1">Reports / Files and templates</p></div>
+          <div class="bg-white rounded-xl custom-shadow border border-slate-100 overflow-hidden">
+            <table class="w-full text-sm"><thead class="bg-slate-50"><tr><th class="p-3 text-left">Name</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Updated</th><th class="p-3 text-left">Owner</th></tr></thead><tbody>
+              <tr class="border-t"><td class="p-3">Distributor Agreement v4</td><td class="p-3">PDF</td><td class="p-3">2026-04-21</td><td class="p-3">Jane</td></tr>
+              <tr class="border-t"><td class="p-3">Pricing Sheet APAC</td><td class="p-3">XLSX</td><td class="p-3">2026-04-20</td><td class="p-3">Jane</td></tr>
+              <tr class="border-t"><td class="p-3">Sample Request Form</td><td class="p-3">DOCX</td><td class="p-3">2026-04-18</td><td class="p-3">Ops</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      `
+    };
+
+    function renderCurrentView() {
+      const viewRoot = document.getElementById('viewRoot');
+      const template = viewTemplates[appState.currentView] || viewTemplates.overview;
+      viewRoot.innerHTML = template();
+      updateHeaderContext();
+      updateSidebarActiveState();
+      if (appState.currentView === 'partners') {
+        setupPartnersViewInteractions();
+      }
+    }
+
+    function updateHeaderContext() {
+      const meta = viewMeta[appState.currentView] || viewMeta.overview;
+      document.getElementById('headerTitle').textContent = meta.title;
+      document.getElementById('headerSubtitle').textContent = meta.subtitle;
+    }
+
+    function updateSidebarActiveState() {
+      const items = document.querySelectorAll('.sidebar-item');
+      items.forEach((item) => {
+        const isActive = item.dataset.view === appState.currentView;
+        item.classList.toggle('bg-[#e0ebff]', isActive);
+        item.classList.toggle('text-blue-700', isActive);
+        item.classList.toggle('font-semibold', isActive);
+        item.classList.toggle('text-slate-600', !isActive);
+        item.classList.toggle('font-medium', !isActive);
+      });
+    }
+
+    function setupViewRouter() {
+      document.getElementById('sidebarNav').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-view]');
+        if (!button) return;
+        appState.currentView = button.dataset.view;
+        renderCurrentView();
+      });
+    }
+
+    function setupPartnersViewInteractions() {
+      const searchInput = document.getElementById('partnerSearchInput');
+      const openFormButton = document.getElementById('openCompanyFormBtn');
+      const companyForm = document.getElementById('companyForm');
+      const cancelFormButton = document.getElementById('cancelCompanyFormBtn');
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (event) => {
+          appState.partnerSearch = event.target.value;
+          renderCurrentView();
+        });
+      }
+
+      if (openFormButton) {
+        openFormButton.addEventListener('click', () => {
+          appState.companyFormOpen = true;
+          renderCurrentView();
+        });
+      }
+
+      if (cancelFormButton) {
+        cancelFormButton.addEventListener('click', () => {
+          appState.companyFormOpen = false;
+          renderCurrentView();
+        });
+      }
+
+      if (companyForm) {
+        companyForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const formData = new FormData(companyForm);
+          const companyName = String(formData.get('companyName') || '').trim();
+          const buyerName = String(formData.get('buyerName') || '').trim();
+          const email = String(formData.get('email') || '').trim();
+          const website = String(formData.get('website') || '').trim();
+          const country = String(formData.get('country') || '').trim();
+          const productCategory = String(formData.get('productCategory') || '').trim();
+          const notes = String(formData.get('notes') || '').trim();
+          const errorNode = document.getElementById('companyFormError');
+
+          if (!companyName || !buyerName) {
+            errorNode.textContent = 'Company Name and Buyer Name are required.';
+            errorNode.classList.remove('hidden');
+            return;
+          }
+
+          if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            errorNode.textContent = 'Please enter a valid email format.';
+            errorNode.classList.remove('hidden');
+            return;
+          }
+
+          const timestamp = new Date().toISOString();
+          companiesData = [
+            {
+              id: Date.now(),
+              companyName,
+              buyerName,
+              email,
+              website,
+              country,
+              productCategory,
+              notes,
+              createdAt: timestamp,
+              updatedAt: timestamp
+            },
+            ...companiesData
+          ];
+
+          saveCompaniesToStorage(companiesData);
+          appState.companyFormOpen = false;
+          renderCurrentView();
+        });
+      }
+    }
+
+    function setupDraftingPanel() {
+      const openBtn = document.getElementById('openDraftingTableBtn');
+      const closeBtn = document.getElementById('closeDraftingTableBtn');
+      const cancelBtn = document.getElementById('cancelDraftingBtn');
+      const panel = document.getElementById('draftingPanel');
+      const backdrop = document.getElementById('draftingBackdrop');
+      const tabs = document.querySelectorAll('.draft-tab');
+      const typeLabel = document.getElementById('draftTypeLabel');
+
+      function openDraftingTable() {
+        panel.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+      }
+
+      function closeDraftingTable() {
+        panel.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+
+      openBtn.addEventListener('click', openDraftingTable);
+      closeBtn.addEventListener('click', closeDraftingTable);
+      cancelBtn.addEventListener('click', closeDraftingTable);
+      backdrop.addEventListener('click', closeDraftingTable);
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((btn) => {
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-slate-100', 'text-slate-600');
+          });
+
+          tab.classList.remove('bg-slate-100', 'text-slate-600');
+          tab.classList.add('bg-blue-600', 'text-white');
+
+          const map = {
+            note: 'Writing: Note',
+            task: 'Writing: Task',
+            call: 'Writing: Call Log',
+            follow: 'Writing: Follow-up'
+          };
+
+          typeLabel.textContent = map[tab.dataset.type] || 'Writing: Note';
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupViewRouter();
+      setupDraftingPanel();
+      renderCurrentView();
+    });
+  </script>
 </body>
 </html>
