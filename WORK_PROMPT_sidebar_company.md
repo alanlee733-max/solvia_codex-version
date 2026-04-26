@@ -25,7 +25,12 @@
 - 메인 Company 버튼 클릭 시 Partners로 이동하면서 saved view를 `all`로 리셋합니다.
 - Saved-view 버튼은 같은 `companiesData`에 필터만 적용합니다.
 - Needs Action은 actionable 상태만 포함합니다(Archived/Dormant 제외 + nextActionDate 도래).
-- Priority는 UI 레이블이며 저장값은 기존 `A/B/C`를 그대로 사용합니다.
+- Priority는 관리용 뷰이며 **priority === "A"** 인 회사만 표시합니다.
+- Priority 입력 의미(수동 관리):
+  - `A` = Focus this week
+  - `B` = Normal follow-up
+  - `C` = Low / keep for later
+- 현재는 수동 우선순위 방식이며, 자동 priority scoring은 추후 검토 항목입니다.
 - Paused Leads는 UI 레이블이며 내부 상태값은 기존 `Dormant`를 그대로 사용합니다.
 
 ## 남은 갭 (다음 라운드)
