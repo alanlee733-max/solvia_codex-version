@@ -533,16 +533,6 @@
       return { actions, todayItems, overdueItems, upcomingItems, byDate };
     }
 
-    function renderTaskList(items, emptyLabel) {
-      if (!items.length) return `<p class="text-xs text-slate-400">${emptyLabel}</p>`;
-      return `<ul class="space-y-2">${items.slice(0, 6).map((company) => `
-        <li class="text-xs text-slate-600 border border-slate-100 rounded-md px-2 py-1">
-          <p class="font-medium text-slate-700">${escapeHtml(company.companyName || '-')}</p>
-          <p>${escapeHtml(company.nextActionDate || '-')} · Priority ${escapeHtml(company.priority || '-')} · ${escapeHtml(company.status || '-')}</p>
-        </li>
-      `).join('')}</ul>`;
-    }
-
     function renderCalendarDayCell(year, monthIndex, day, byDate) {
       const dateKey = formatDateKey(new Date(year, monthIndex, day));
       const dayItems = byDate[dateKey] || [];
@@ -567,17 +557,6 @@
 
     function renderTasksView() {
       const { actions, todayItems, overdueItems, upcomingItems, byDate } = getTaskGroups();
-      if (!actions.length) {
-        return `
-          <div class="space-y-6">
-            <div><h1 class="text-2xl font-bold text-slate-800">Task Calendar</h1><p class="text-sm text-slate-400 mt-1">Tasks / Action dashboard from Company next action dates</p></div>
-            <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100">
-              <p class="text-sm text-slate-500">No scheduled actions yet. Add a Next Action Date in Company.</p>
-            </div>
-          </div>
-        `;
-      }
-
       const now = new Date();
       const year = now.getFullYear();
       const monthIndex = now.getMonth();
@@ -634,6 +613,7 @@
                   <h3 class="font-semibold text-slate-800">${monthName} ${year}</h3>
                   <p class="text-xs text-slate-400">${actions.length} scheduled actions</p>
                 </div>
+                ${!actions.length ? '<p class="text-sm text-slate-500 mb-3">No scheduled actions yet. Add a Next Action Date in Company.</p>' : ''}
                 <div class="grid grid-cols-7 gap-2 text-[11px] text-slate-400 mb-2">
                   ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => `<p class="px-1">${d}</p>`).join('')}
                 </div>
@@ -650,11 +630,6 @@
               </div>
               <div class="grid grid-cols-2 gap-2">
                 ${monthSummary}
-              </div>
-              <div class="mt-4 space-y-3">
-                <div><p class="text-sm font-semibold text-slate-700 mb-1">Today</p>${renderTaskList(todayItems, 'No actions for today.')}</div>
-                <div><p class="text-sm font-semibold text-slate-700 mb-1">Overdue</p>${renderTaskList(overdueItems, 'No overdue actions.')}</div>
-                <div><p class="text-sm font-semibold text-slate-700 mb-1">Upcoming</p>${renderTaskList(upcomingItems, 'No upcoming actions.')}</div>
               </div>
             </div>
           </div>
