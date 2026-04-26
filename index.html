@@ -142,12 +142,41 @@
   <script>
     const COMPANY_STORAGE_KEY = 'alan-crm-companies';
 
+    function getNowIso() {
+      return new Date().toISOString();
+    }
+
+    function normalizeCompanyRecord(record) {
+      const timestamp = getNowIso();
+      const normalized = {
+        ...record,
+        id: record?.id ?? Date.now() + Math.floor(Math.random() * 1000),
+        companyName: String(record?.companyName || '').trim(),
+        buyerName: String(record?.buyerName || '').trim(),
+        email: String(record?.email || '').trim(),
+        website: String(record?.website || '').trim(),
+        country: String(record?.country || '').trim(),
+        productCategory: String(record?.productCategory || record?.handledProducts || '').trim(),
+        notes: String(record?.notes || '').trim(),
+        createdAt: record?.createdAt || timestamp,
+        updatedAt: record?.updatedAt || record?.createdAt || timestamp
+      };
+
+      return normalized;
+    }
+
     function loadCompaniesFromStorage() {
       try {
         const raw = localStorage.getItem(COMPANY_STORAGE_KEY);
         if (!raw) return [];
         const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        if (!Array.isArray(parsed)) return [];
+        const migrated = parsed.map((company) => normalizeCompanyRecord(company));
+        const isDifferent = JSON.stringify(parsed) !== JSON.stringify(migrated);
+        if (isDifferent) {
+          saveCompaniesToStorage(migrated);
+        }
+        return migrated;
       } catch (error) {
         return [];
       }
@@ -162,12 +191,15 @@
     const appState = {
       currentView: 'partners',
       partnerSearch: '',
-      companyFormOpen: false
+      partnerSort: 'updatedAtDesc',
+      companyFormOpen: false,
+      companyFormMode: 'add',
+      editingCompanyId: null
     };
 
     const viewMeta = {
       overview: { title: 'Overview', subtitle: 'Command Center / Snapshot' },
-      partners: { title: 'Entity Dossier: Acme Solutions Inc.', subtitle: 'Company / Acme Solutions Inc.' },
+      partners: { title: 'Company Partners', subtitle: 'Company / Partner directory' },
       deals: { title: 'Deals Pipeline', subtitle: 'Pipeline / Active deals' },
       tasks: { title: 'Task Board', subtitle: 'Tasks / Weekly execution' },
       activity: { title: 'Activity Feed', subtitle: 'Activity / Recent touchpoints' },
@@ -179,20 +211,45 @@
         const searchTerm = appState.partnerSearch.toLowerCase().trim();
         const companyName = String(partner.companyName || '').toLowerCase();
         const country = String(partner.country || '').toLowerCase();
-        const buyerName = String(partner.buyerName || '').toLowerCase();
         const email = String(partner.email || '').toLowerCase();
+        const website = String(partner.website || '').toLowerCase();
         const productCategory = String(partner.productCategory || '').toLowerCase();
         return !searchTerm
           || companyName.includes(searchTerm)
           || country.includes(searchTerm)
-          || buyerName.includes(searchTerm)
           || email.includes(searchTerm)
+          || website.includes(searchTerm)
           || productCategory.includes(searchTerm);
       });
     }
 
+    function sortCompanies(companies) {
+      const sorted = [...companies];
+      sorted.sort((a, b) => {
+        if (appState.partnerSort === 'companyNameAsc') {
+          return String(a.companyName || '').localeCompare(String(b.companyName || ''));
+        }
+        if (appState.partnerSort === 'companyNameDesc') {
+          return String(b.companyName || '').localeCompare(String(a.companyName || ''));
+        }
+        if (appState.partnerSort === 'updatedAtOldest') {
+          return new Date(a.updatedAt || a.createdAt || 0) - new Date(b.updatedAt || b.createdAt || 0);
+        }
+        return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
+      });
+      return sorted;
+    }
+
+    function getCompanyIdentityKey(companyName, email) {
+      return `${String(companyName || '').trim().toLowerCase()}::${String(email || '').trim().toLowerCase()}`;
+    }
+
     function renderPartnersView() {
-      const filteredPartners = getFilteredCompanies();
+      const filteredPartners = sortCompanies(getFilteredCompanies());
+      const editingCompany = companiesData.find((company) => String(company.id) === String(appState.editingCompanyId));
+      const formCompany = appState.companyFormMode === 'edit' && editingCompany ? editingCompany : {};
+      const hasAnyData = companiesData.length > 0;
+      const noData = !hasAnyData;
 
       return `
         <div class="space-y-6">
@@ -201,8 +258,14 @@
             <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Visible Rows</p><p class="text-2xl font-bold text-slate-800 mt-1">${filteredPartners.length}</p></div>
           </div>
 
-          <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3">
             <input id="partnerSearchInput" type="text" value="${appState.partnerSearch}" placeholder="Search company, country, contact..." class="w-full border border-slate-200 rounded-md text-sm" />
+            <select id="partnerSortSelect" class="w-full border border-slate-200 rounded-md text-sm">
+              <option value="updatedAtDesc" ${appState.partnerSort === 'updatedAtDesc' ? 'selected' : ''}>Updated: Newest</option>
+              <option value="updatedAtOldest" ${appState.partnerSort === 'updatedAtOldest' ? 'selected' : ''}>Updated: Oldest</option>
+              <option value="companyNameAsc" ${appState.partnerSort === 'companyNameAsc' ? 'selected' : ''}>Company: A → Z</option>
+              <option value="companyNameDesc" ${appState.partnerSort === 'companyNameDesc' ? 'selected' : ''}>Company: Z → A</option>
+            </select>
             <button id="openCompanyFormBtn" class="w-full md:w-auto justify-self-start bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">Add Company</button>
           </div>
 
@@ -210,17 +273,17 @@
             <form id="companyForm" class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 space-y-4">
               <p id="companyFormError" class="hidden text-sm text-red-600"></p>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input name="companyName" type="text" placeholder="Company Name *" class="w-full border border-slate-200 rounded-md text-sm" required />
-                <input name="buyerName" type="text" placeholder="Buyer Name *" class="w-full border border-slate-200 rounded-md text-sm" required />
-                <input name="email" type="email" placeholder="Email" class="w-full border border-slate-200 rounded-md text-sm" />
-                <input name="website" type="text" placeholder="Website" class="w-full border border-slate-200 rounded-md text-sm" />
-                <input name="country" type="text" placeholder="Country" class="w-full border border-slate-200 rounded-md text-sm" />
-                <input name="productCategory" type="text" placeholder="Product Category" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="companyName" type="text" value="${formCompany.companyName || ''}" placeholder="Company Name *" class="w-full border border-slate-200 rounded-md text-sm" required />
+                <input name="email" type="email" value="${formCompany.email || ''}" placeholder="Email" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="website" type="text" value="${formCompany.website || ''}" placeholder="Website" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="country" type="text" value="${formCompany.country || ''}" placeholder="Country" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="productCategory" type="text" value="${formCompany.productCategory || ''}" placeholder="Product Category" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="buyerName" type="text" value="${formCompany.buyerName || ''}" placeholder="Buyer Name (Optional)" class="w-full border border-slate-200 rounded-md text-sm" />
               </div>
-              <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-24"></textarea>
+              <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-24">${formCompany.notes || ''}</textarea>
               <div class="flex gap-2 justify-end">
                 <button id="cancelCompanyFormBtn" type="button" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
-                <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">Save</button>
+                <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">${appState.companyFormMode === 'edit' ? 'Save Changes' : 'Save'}</button>
               </div>
             </form>
           ` : ''}
@@ -235,9 +298,10 @@
                     <th class="p-3 text-left">Website</th>
                     <th class="p-3 text-left">Country</th>
                     <th class="p-3 text-left">Product Category</th>
+                    <th class="p-3 text-left">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="partnersTableBody">
                   ${filteredPartners.length ? filteredPartners.map((partner) => `
                     <tr class="border-t hover:bg-slate-50">
                       <td class="p-3"><p class="font-medium text-slate-800">${partner.companyName || '-'}</p><p class="text-xs text-slate-500">${partner.notes || ''}</p></td>
@@ -246,8 +310,14 @@
                       <td class="p-3">${partner.website || '-'}</td>
                       <td class="p-3">${partner.country || '-'}</td>
                       <td class="p-3">${partner.productCategory || '-'}</td>
+                      <td class="p-3">
+                        <div class="flex items-center gap-2">
+                          <button type="button" data-action="edit-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-slate-200 hover:bg-slate-100">Edit</button>
+                          <button type="button" data-action="delete-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-red-200 text-red-600 hover:bg-red-50">Delete</button>
+                        </div>
+                      </td>
                     </tr>
-                  `).join('') : '<tr><td colspan="6" class="p-4 text-center text-slate-500">No companies added yet.</td></tr>'}
+                  `).join('') : `<tr><td colspan="7" class="p-4 text-center text-slate-500">${noData ? 'No companies added yet.' : 'No companies match your search.'}</td></tr>`}
                 </tbody>
               </table>
           </div>
@@ -385,6 +455,8 @@
       const openFormButton = document.getElementById('openCompanyFormBtn');
       const companyForm = document.getElementById('companyForm');
       const cancelFormButton = document.getElementById('cancelCompanyFormBtn');
+      const sortSelect = document.getElementById('partnerSortSelect');
+      const tableBody = document.getElementById('partnersTableBody');
 
       if (searchInput) {
         searchInput.addEventListener('input', (event) => {
@@ -393,9 +465,18 @@
         });
       }
 
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (event) => {
+          appState.partnerSort = event.target.value;
+          renderCurrentView();
+        });
+      }
+
       if (openFormButton) {
         openFormButton.addEventListener('click', () => {
           appState.companyFormOpen = true;
+          appState.companyFormMode = 'add';
+          appState.editingCompanyId = null;
           renderCurrentView();
         });
       }
@@ -403,7 +484,39 @@
       if (cancelFormButton) {
         cancelFormButton.addEventListener('click', () => {
           appState.companyFormOpen = false;
+          appState.companyFormMode = 'add';
+          appState.editingCompanyId = null;
           renderCurrentView();
+        });
+      }
+
+      if (tableBody) {
+        tableBody.addEventListener('click', (event) => {
+          const actionButton = event.target.closest('[data-action]');
+          if (!actionButton) return;
+          const companyId = actionButton.dataset.id;
+          if (actionButton.dataset.action === 'edit-company') {
+            appState.companyFormOpen = true;
+            appState.companyFormMode = 'edit';
+            appState.editingCompanyId = companyId;
+            renderCurrentView();
+            return;
+          }
+
+          if (actionButton.dataset.action === 'delete-company') {
+            const company = companiesData.find((item) => String(item.id) === String(companyId));
+            if (!company) return;
+            const shouldDelete = window.confirm(`Delete ${company.companyName || 'this company'}?`);
+            if (!shouldDelete) return;
+            companiesData = companiesData.filter((item) => String(item.id) !== String(companyId));
+            saveCompaniesToStorage(companiesData);
+            if (String(appState.editingCompanyId) === String(companyId)) {
+              appState.companyFormOpen = false;
+              appState.companyFormMode = 'add';
+              appState.editingCompanyId = null;
+            }
+            renderCurrentView();
+          }
         });
       }
 
@@ -420,8 +533,8 @@
           const notes = String(formData.get('notes') || '').trim();
           const errorNode = document.getElementById('companyFormError');
 
-          if (!companyName || !buyerName) {
-            errorNode.textContent = 'Company Name and Buyer Name are required.';
+          if (!companyName) {
+            errorNode.textContent = 'Company Name is required.';
             errorNode.classList.remove('hidden');
             return;
           }
@@ -431,26 +544,59 @@
             errorNode.classList.remove('hidden');
             return;
           }
+          errorNode.classList.add('hidden');
 
-          const timestamp = new Date().toISOString();
-          companiesData = [
-            {
-              id: Date.now(),
-              companyName,
-              buyerName,
-              email,
-              website,
-              country,
-              productCategory,
-              notes,
-              createdAt: timestamp,
-              updatedAt: timestamp
-            },
-            ...companiesData
-          ];
+          const duplicateKey = getCompanyIdentityKey(companyName, email);
+          const existingDuplicate = companiesData.find((company) => {
+            const currentKey = getCompanyIdentityKey(company.companyName, company.email);
+            const isSameRecord = appState.companyFormMode === 'edit' && String(company.id) === String(appState.editingCompanyId);
+            return !isSameRecord && currentKey === duplicateKey && duplicateKey !== '::';
+          });
+
+          if (existingDuplicate) {
+            errorNode.textContent = 'A company with the same name and email already exists.';
+            errorNode.classList.remove('hidden');
+            return;
+          }
+
+          const timestamp = getNowIso();
+          if (appState.companyFormMode === 'edit') {
+            companiesData = companiesData.map((company) => {
+              if (String(company.id) !== String(appState.editingCompanyId)) return company;
+              return normalizeCompanyRecord({
+                ...company,
+                companyName,
+                buyerName,
+                email,
+                website,
+                country,
+                productCategory,
+                notes,
+                updatedAt: timestamp
+              });
+            });
+          } else {
+            companiesData = [
+              normalizeCompanyRecord({
+                id: Date.now(),
+                companyName,
+                buyerName,
+                email,
+                website,
+                country,
+                productCategory,
+                notes,
+                createdAt: timestamp,
+                updatedAt: timestamp
+              }),
+              ...companiesData
+            ];
+          }
 
           saveCompaniesToStorage(companiesData);
           appState.companyFormOpen = false;
+          appState.companyFormMode = 'add';
+          appState.editingCompanyId = null;
           renderCurrentView();
         });
       }
