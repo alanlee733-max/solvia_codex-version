@@ -53,6 +53,14 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Company
           </button>
+          <div id="companySavedViews" class="ml-8 mt-1 mb-2 space-y-1">
+            <button data-company-view="all" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-blue-700 bg-blue-50">All Companies</button>
+            <button data-company-view="needsAction" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Needs Action</button>
+            <button data-company-view="aesthetics" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Aesthetics</button>
+            <button data-company-view="bioOem" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Bio/OEM</button>
+            <button data-company-view="aiSoftware" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">AI/Software</button>
+            <button data-company-view="dormant" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Dormant</button>
+          </div>
           <button data-view="deals" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Deals
@@ -141,6 +149,19 @@
 
   <script>
     const COMPANY_STORAGE_KEY = 'alan-crm-companies';
+    const BUSINESS_FIELDS = ['Aesthetics', 'Bio/OEM', 'AI/Software', 'Trade', 'Other'];
+    const BUYER_TYPES = ['Distributor', 'Clinic', 'Manufacturer', 'Agency', 'Vendor', 'Other'];
+    const STATUS_OPTIONS = ['New', 'Contacted', 'Qualified', 'Active', 'Dormant', 'Archived'];
+    const PRIORITY_OPTIONS = ['A', 'B', 'C'];
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
     function getNowIso() {
       return new Date().toISOString();
@@ -158,6 +179,12 @@
         country: String(record?.country || '').trim(),
         productCategory: String(record?.productCategory || record?.handledProducts || '').trim(),
         notes: String(record?.notes || '').trim(),
+        businessField: BUSINESS_FIELDS.includes(record?.businessField) ? record.businessField : 'Aesthetics',
+        buyerType: BUYER_TYPES.includes(record?.buyerType) ? record.buyerType : 'Distributor',
+        status: STATUS_OPTIONS.includes(record?.status) ? record.status : 'New',
+        priority: PRIORITY_OPTIONS.includes(record?.priority) ? record.priority : 'B',
+        nextActionDate: String(record?.nextActionDate || '').trim(),
+        tags: String(record?.tags || '').trim(),
         createdAt: record?.createdAt || timestamp,
         updatedAt: record?.updatedAt || record?.createdAt || timestamp
       };
@@ -192,6 +219,7 @@
       currentView: 'partners',
       partnerSearch: '',
       partnerSort: 'updatedAtDesc',
+      companySavedView: 'all',
       companyFormOpen: false,
       companyFormMode: 'add',
       editingCompanyId: null
@@ -206,8 +234,44 @@
       documents: { title: 'Documents', subtitle: 'Reports / Files and templates' }
     };
 
+    function getTodayLocalDateStart() {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    }
+
+    function parseInputDateLocal(dateText) {
+      if (!dateText) return null;
+      const [year, month, day] = String(dateText).split('-').map(Number);
+      if (!year || !month || !day) return null;
+      return new Date(year, month - 1, day);
+    }
+
+    function isNeedsAction(company) {
+      if (company.status === 'Archived') return false;
+      const targetDate = parseInputDateLocal(company.nextActionDate);
+      if (!targetDate) return false;
+      return targetDate <= getTodayLocalDateStart();
+    }
+
+    function applySavedViewFilter(companies) {
+      switch (appState.companySavedView) {
+        case 'needsAction':
+          return companies.filter((company) => isNeedsAction(company));
+        case 'aesthetics':
+          return companies.filter((company) => company.businessField === 'Aesthetics');
+        case 'bioOem':
+          return companies.filter((company) => company.businessField === 'Bio/OEM');
+        case 'aiSoftware':
+          return companies.filter((company) => company.businessField === 'AI/Software');
+        case 'dormant':
+          return companies.filter((company) => company.status === 'Dormant');
+        default:
+          return companies;
+      }
+    }
+
     function getFilteredCompanies() {
-      return companiesData.filter((partner) => {
+      return applySavedViewFilter(companiesData).filter((partner) => {
         const searchTerm = appState.partnerSearch.toLowerCase().trim();
         const companyName = String(partner.companyName || '').toLowerCase();
         const buyerName = String(partner.buyerName || '').toLowerCase();
@@ -216,6 +280,11 @@
         const website = String(partner.website || '').toLowerCase();
         const productCategory = String(partner.productCategory || '').toLowerCase();
         const notes = String(partner.notes || '').toLowerCase();
+        const businessField = String(partner.businessField || '').toLowerCase();
+        const buyerType = String(partner.buyerType || '').toLowerCase();
+        const status = String(partner.status || '').toLowerCase();
+        const priority = String(partner.priority || '').toLowerCase();
+        const tags = String(partner.tags || '').toLowerCase();
         return !searchTerm
           || companyName.includes(searchTerm)
           || buyerName.includes(searchTerm)
@@ -223,7 +292,12 @@
           || email.includes(searchTerm)
           || website.includes(searchTerm)
           || productCategory.includes(searchTerm)
-          || notes.includes(searchTerm);
+          || notes.includes(searchTerm)
+          || businessField.includes(searchTerm)
+          || buyerType.includes(searchTerm)
+          || status.includes(searchTerm)
+          || priority.includes(searchTerm)
+          || tags.includes(searchTerm);
       });
     }
 
@@ -260,13 +334,18 @@
 
       return visibleCompanies.map((partner) => `
         <tr class="border-t hover:bg-slate-50">
-          <td class="p-3"><p class="font-medium text-slate-800">${partner.companyName || '-'}</p><p class="text-xs text-slate-500">${partner.notes || ''}</p></td>
-          <td class="p-3">${partner.buyerName || '-'}</td>
-          <td class="p-3">${partner.email || '-'}</td>
-          <td class="p-3">${partner.website || '-'}</td>
-          <td class="p-3">${partner.country || '-'}</td>
-          <td class="p-3">${partner.productCategory || '-'}</td>
+          <td class="p-3"><p class="font-medium text-slate-800">${escapeHtml(partner.companyName || '-')}</p><p class="text-xs text-slate-500">${escapeHtml(partner.notes || '')}</p></td>
+          <td class="p-3">${escapeHtml(partner.buyerName || '-')}</td>
+          <td class="p-3">${escapeHtml(partner.email || '-')}</td>
+          <td class="p-3">${escapeHtml(partner.website || '-')}</td>
+          <td class="p-3">${escapeHtml(partner.country || '-')}</td>
           <td class="p-3">
+            <p>${escapeHtml(partner.productCategory || '-')}</p>
+            <p class="text-xs text-slate-500">${escapeHtml(partner.tags || '')}</p>
+          </td>
+          <td class="p-3">
+            <p class="text-xs text-slate-700">${escapeHtml(partner.businessField || '-')} / ${escapeHtml(partner.buyerType || '-')}</p>
+            <p class="text-xs text-slate-500">${escapeHtml(partner.status || '-')} · ${escapeHtml(partner.priority || '-')} · ${escapeHtml(partner.nextActionDate || '-')}</p>
             <div class="flex items-center gap-2">
               <button type="button" data-action="edit-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-slate-200 hover:bg-slate-100">Edit</button>
               <button type="button" data-action="delete-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-red-200 text-red-600 hover:bg-red-50">Delete</button>
@@ -279,9 +358,13 @@
     function updatePartnersStats() {
       const totalNode = document.getElementById('totalCompaniesCount');
       const visibleNode = document.getElementById('visibleCompaniesCount');
-      if (!totalNode || !visibleNode) return;
+      const needsActionNode = document.getElementById('needsActionCount');
+      const highPriorityNode = document.getElementById('highPriorityCount');
+      if (!totalNode || !visibleNode || !needsActionNode || !highPriorityNode) return;
       totalNode.textContent = String(companiesData.length);
       visibleNode.textContent = String(getVisibleCompanies().length);
+      needsActionNode.textContent = String(companiesData.filter((company) => isNeedsAction(company)).length);
+      highPriorityNode.textContent = String(companiesData.filter((company) => company.priority === 'A').length);
     }
 
     function renderPartnersTableRows() {
@@ -290,6 +373,16 @@
       const visibleCompanies = getVisibleCompanies();
       tableBody.innerHTML = getPartnersTableRowsMarkup(visibleCompanies);
       updatePartnersStats();
+    }
+
+    function updateCompanySavedViewActiveState() {
+      const items = document.querySelectorAll('.company-view-item');
+      items.forEach((item) => {
+        const isActive = item.dataset.companyView === appState.companySavedView;
+        item.classList.toggle('bg-blue-50', isActive);
+        item.classList.toggle('text-blue-700', isActive);
+        item.classList.toggle('text-slate-600', !isActive);
+      });
     }
 
     function renderPartnersView() {
@@ -302,6 +395,8 @@
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Total Companies</p><p id="totalCompaniesCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.length}</p></div>
             <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Visible Rows</p><p id="visibleCompaniesCount" class="text-2xl font-bold text-slate-800 mt-1">${filteredPartners.length}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Needs Action</p><p id="needsActionCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.filter((company) => isNeedsAction(company)).length}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">High Priority</p><p id="highPriorityCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.filter((company) => company.priority === 'A').length}</p></div>
           </div>
 
           <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -319,14 +414,20 @@
             <form id="companyForm" class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 space-y-4">
               <p id="companyFormError" class="hidden text-sm text-red-600"></p>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input name="companyName" type="text" value="${formCompany.companyName || ''}" placeholder="Company Name *" class="w-full border border-slate-200 rounded-md text-sm" required />
-                <input name="email" type="email" value="${formCompany.email || ''}" placeholder="Email" class="w-full border border-slate-200 rounded-md text-sm" />
-                <input name="website" type="text" value="${formCompany.website || ''}" placeholder="Website" class="w-full border border-slate-200 rounded-md text-sm" />
-                <input name="country" type="text" value="${formCompany.country || ''}" placeholder="Country" class="w-full border border-slate-200 rounded-md text-sm" />
-                <input name="productCategory" type="text" value="${formCompany.productCategory || ''}" placeholder="Product Category" class="w-full border border-slate-200 rounded-md text-sm" />
-                <input name="buyerName" type="text" value="${formCompany.buyerName || ''}" placeholder="Buyer Name (Optional)" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="companyName" type="text" value="${escapeHtml(formCompany.companyName || '')}" placeholder="Company Name *" class="w-full border border-slate-200 rounded-md text-sm" required />
+                <input name="email" type="email" value="${escapeHtml(formCompany.email || '')}" placeholder="Email" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="website" type="text" value="${escapeHtml(formCompany.website || '')}" placeholder="Website" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="country" type="text" value="${escapeHtml(formCompany.country || '')}" placeholder="Country" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="productCategory" type="text" value="${escapeHtml(formCompany.productCategory || '')}" placeholder="Product Category" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="buyerName" type="text" value="${escapeHtml(formCompany.buyerName || '')}" placeholder="Buyer Name (Optional)" class="w-full border border-slate-200 rounded-md text-sm" />
+                <select name="businessField" class="w-full border border-slate-200 rounded-md text-sm">${BUSINESS_FIELDS.map((item) => `<option value="${item}" ${formCompany.businessField === item ? 'selected' : ''}>${item}</option>`).join('')}</select>
+                <select name="buyerType" class="w-full border border-slate-200 rounded-md text-sm">${BUYER_TYPES.map((item) => `<option value="${item}" ${formCompany.buyerType === item ? 'selected' : ''}>${item}</option>`).join('')}</select>
+                <select name="status" class="w-full border border-slate-200 rounded-md text-sm">${STATUS_OPTIONS.map((item) => `<option value="${item}" ${formCompany.status === item ? 'selected' : ''}>${item}</option>`).join('')}</select>
+                <select name="priority" class="w-full border border-slate-200 rounded-md text-sm">${PRIORITY_OPTIONS.map((item) => `<option value="${item}" ${formCompany.priority === item ? 'selected' : ''}>${item}</option>`).join('')}</select>
+                <input name="nextActionDate" type="date" value="${escapeHtml(formCompany.nextActionDate || '')}" class="w-full border border-slate-200 rounded-md text-sm" />
+                <input name="tags" type="text" value="${escapeHtml(formCompany.tags || '')}" placeholder="Tags (comma separated)" class="w-full border border-slate-200 rounded-md text-sm" />
               </div>
-              <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-24">${formCompany.notes || ''}</textarea>
+              <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-24">${escapeHtml(formCompany.notes || '')}</textarea>
               <div class="flex gap-2 justify-end">
                 <button id="cancelCompanyFormBtn" type="button" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
                 <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">${appState.companyFormMode === 'edit' ? 'Save Changes' : 'Save'}</button>
@@ -470,10 +571,19 @@
         item.classList.toggle('text-slate-600', !isActive);
         item.classList.toggle('font-medium', !isActive);
       });
+      updateCompanySavedViewActiveState();
     }
 
     function setupViewRouter() {
       document.getElementById('sidebarNav').addEventListener('click', (event) => {
+        const savedViewButton = event.target.closest('[data-company-view]');
+        if (savedViewButton) {
+          appState.currentView = 'partners';
+          appState.companySavedView = savedViewButton.dataset.companyView;
+          renderCurrentView();
+          return;
+        }
+
         const button = event.target.closest('[data-view]');
         if (!button) return;
         appState.currentView = button.dataset.view;
@@ -562,6 +672,12 @@
           const country = String(formData.get('country') || '').trim();
           const productCategory = String(formData.get('productCategory') || '').trim();
           const notes = String(formData.get('notes') || '').trim();
+          const businessField = String(formData.get('businessField') || 'Aesthetics').trim();
+          const buyerType = String(formData.get('buyerType') || 'Distributor').trim();
+          const status = String(formData.get('status') || 'New').trim();
+          const priority = String(formData.get('priority') || 'B').trim();
+          const nextActionDate = String(formData.get('nextActionDate') || '').trim();
+          const tags = String(formData.get('tags') || '').trim();
           const errorNode = document.getElementById('companyFormError');
 
           if (!companyName) {
@@ -603,6 +719,12 @@
                 country,
                 productCategory,
                 notes,
+                businessField,
+                buyerType,
+                status,
+                priority,
+                nextActionDate,
+                tags,
                 updatedAt: timestamp
               });
             });
@@ -617,6 +739,12 @@
                 country,
                 productCategory,
                 notes,
+                businessField,
+                buyerType,
+                status,
+                priority,
+                nextActionDate,
+                tags,
                 createdAt: timestamp,
                 updatedAt: timestamp
               }),
