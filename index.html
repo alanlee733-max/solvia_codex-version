@@ -53,13 +53,22 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
             Company
           </button>
-          <div id="companySavedViews" class="ml-8 mt-1 mb-2 space-y-1">
-            <button data-company-view="all" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-blue-700 bg-blue-50">All Companies</button>
-            <button data-company-view="needsAction" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Needs Action</button>
-            <button data-company-view="aesthetics" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Aesthetics</button>
-            <button data-company-view="bioOem" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Bio/OEM</button>
-            <button data-company-view="aiSoftware" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">AI/Software</button>
-            <button data-company-view="dormant" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Dormant</button>
+          <div id="companySavedViews" class="ml-8 mt-1 mb-2 space-y-2">
+            <div class="space-y-1">
+              <p class="px-2 text-[11px] uppercase tracking-wide text-slate-400">Company</p>
+              <button data-company-view="all" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-blue-700 bg-blue-50">All Companies</button>
+              <button data-company-view="needsAction" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Needs Action</button>
+              <button data-company-view="priority" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Priority</button>
+              <button data-company-view="pausedLeads" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Paused Leads</button>
+            </div>
+            <div class="space-y-1">
+              <p class="px-2 text-[11px] uppercase tracking-wide text-slate-400">Fields</p>
+              <button data-company-view="fieldAesthetics" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Aesthetics</button>
+              <button data-company-view="fieldBioOem" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Bio/OEM</button>
+              <button data-company-view="fieldAiSoftware" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">AI/Software</button>
+              <button data-company-view="fieldTrade" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Trade</button>
+              <button data-company-view="fieldOther" class="company-view-item w-full text-left px-2 py-1 text-xs rounded text-slate-600 hover:bg-slate-100">Other</button>
+            </div>
           </div>
           <button data-view="deals" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
@@ -257,14 +266,20 @@
       switch (appState.companySavedView) {
         case 'needsAction':
           return companies.filter((company) => isNeedsAction(company));
-        case 'aesthetics':
-          return companies.filter((company) => company.businessField === 'Aesthetics');
-        case 'bioOem':
-          return companies.filter((company) => company.businessField === 'Bio/OEM');
-        case 'aiSoftware':
-          return companies.filter((company) => company.businessField === 'AI/Software');
-        case 'dormant':
+        case 'priority':
+          return companies.filter((company) => company.priority === 'A');
+        case 'pausedLeads':
           return companies.filter((company) => company.status === 'Dormant');
+        case 'fieldAesthetics':
+          return companies.filter((company) => company.businessField === 'Aesthetics');
+        case 'fieldBioOem':
+          return companies.filter((company) => company.businessField === 'Bio/OEM');
+        case 'fieldAiSoftware':
+          return companies.filter((company) => company.businessField === 'AI/Software');
+        case 'fieldTrade':
+          return companies.filter((company) => company.businessField === 'Trade');
+        case 'fieldOther':
+          return companies.filter((company) => company.businessField === 'Other');
         default:
           return companies;
       }
@@ -329,11 +344,19 @@
     function getPartnersTableRowsMarkup(visibleCompanies) {
       const noData = companiesData.length === 0;
       if (!visibleCompanies.length) {
+        const hasSearch = !!appState.partnerSearch.trim();
+        const fieldViews = ['fieldAesthetics', 'fieldBioOem', 'fieldAiSoftware', 'fieldTrade', 'fieldOther'];
         const emptyMessage = noData
           ? 'No companies yet. Add your first company.'
-          : appState.companySavedView === 'needsAction'
-            ? "No action needed. You're clear for now."
-            : 'No matching companies found. Try another search.';
+          : hasSearch
+            ? 'No matching companies found. Try another search.'
+            : appState.companySavedView === 'needsAction'
+              ? "No action needed. You're clear for now."
+              : appState.companySavedView === 'pausedLeads'
+                ? 'No paused leads. Nothing is on hold.'
+                : fieldViews.includes(appState.companySavedView)
+                  ? 'No companies in this field yet.'
+                  : 'No matching companies found. Try another search.';
         return `<tr><td colspan="7" class="p-4 text-center text-slate-500">${emptyMessage}</td></tr>`;
       }
 
@@ -364,12 +387,12 @@
       const totalNode = document.getElementById('totalCompaniesCount');
       const visibleNode = document.getElementById('visibleCompaniesCount');
       const needsActionNode = document.getElementById('needsActionCount');
-      const highPriorityNode = document.getElementById('highPriorityCount');
-      if (!totalNode || !visibleNode || !needsActionNode || !highPriorityNode) return;
+      const priorityNode = document.getElementById('priorityCount');
+      if (!totalNode || !visibleNode || !needsActionNode || !priorityNode) return;
       totalNode.textContent = String(companiesData.length);
       visibleNode.textContent = String(getVisibleCompanies().length);
       needsActionNode.textContent = String(companiesData.filter((company) => isNeedsAction(company)).length);
-      highPriorityNode.textContent = String(companiesData.filter((company) => company.priority === 'A').length);
+      priorityNode.textContent = String(companiesData.filter((company) => company.priority === 'A').length);
     }
 
     function renderPartnersTableRows() {
@@ -401,7 +424,7 @@
             <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Total Companies</p><p id="totalCompaniesCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.length}</p></div>
             <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Visible Rows</p><p id="visibleCompaniesCount" class="text-2xl font-bold text-slate-800 mt-1">${filteredPartners.length}</p></div>
             <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Needs Action</p><p id="needsActionCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.filter((company) => isNeedsAction(company)).length}</p></div>
-            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">High Priority</p><p id="highPriorityCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.filter((company) => company.priority === 'A').length}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Priority</p><p id="priorityCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.filter((company) => company.priority === 'A').length}</p></div>
           </div>
 
           <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3">
