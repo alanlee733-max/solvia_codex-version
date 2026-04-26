@@ -248,18 +248,60 @@
       return `${String(companyName || '').trim().toLowerCase()}::${String(email || '').trim().toLowerCase()}`;
     }
 
+    function getVisibleCompanies() {
+      return sortCompanies(getFilteredCompanies());
+    }
+
+    function getPartnersTableRowsMarkup(visibleCompanies) {
+      const noData = companiesData.length === 0;
+      if (!visibleCompanies.length) {
+        return `<tr><td colspan="7" class="p-4 text-center text-slate-500">${noData ? 'No companies yet. Add your first company.' : 'No matching companies found. Try another search.'}</td></tr>`;
+      }
+
+      return visibleCompanies.map((partner) => `
+        <tr class="border-t hover:bg-slate-50">
+          <td class="p-3"><p class="font-medium text-slate-800">${partner.companyName || '-'}</p><p class="text-xs text-slate-500">${partner.notes || ''}</p></td>
+          <td class="p-3">${partner.buyerName || '-'}</td>
+          <td class="p-3">${partner.email || '-'}</td>
+          <td class="p-3">${partner.website || '-'}</td>
+          <td class="p-3">${partner.country || '-'}</td>
+          <td class="p-3">${partner.productCategory || '-'}</td>
+          <td class="p-3">
+            <div class="flex items-center gap-2">
+              <button type="button" data-action="edit-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-slate-200 hover:bg-slate-100">Edit</button>
+              <button type="button" data-action="delete-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-red-200 text-red-600 hover:bg-red-50">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updatePartnersStats() {
+      const totalNode = document.getElementById('totalCompaniesCount');
+      const visibleNode = document.getElementById('visibleCompaniesCount');
+      if (!totalNode || !visibleNode) return;
+      totalNode.textContent = String(companiesData.length);
+      visibleNode.textContent = String(getVisibleCompanies().length);
+    }
+
+    function renderPartnersTableRows() {
+      const tableBody = document.getElementById('partnersTableBody');
+      if (!tableBody) return;
+      const visibleCompanies = getVisibleCompanies();
+      tableBody.innerHTML = getPartnersTableRowsMarkup(visibleCompanies);
+      updatePartnersStats();
+    }
+
     function renderPartnersView() {
-      const filteredPartners = sortCompanies(getFilteredCompanies());
+      const filteredPartners = getVisibleCompanies();
       const editingCompany = companiesData.find((company) => String(company.id) === String(appState.editingCompanyId));
       const formCompany = appState.companyFormMode === 'edit' && editingCompany ? editingCompany : {};
-      const hasAnyData = companiesData.length > 0;
-      const noData = !hasAnyData;
 
       return `
         <div class="space-y-6">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Total Companies</p><p class="text-2xl font-bold text-slate-800 mt-1">${companiesData.length}</p></div>
-            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Visible Rows</p><p class="text-2xl font-bold text-slate-800 mt-1">${filteredPartners.length}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Total Companies</p><p id="totalCompaniesCount" class="text-2xl font-bold text-slate-800 mt-1">${companiesData.length}</p></div>
+            <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Visible Rows</p><p id="visibleCompaniesCount" class="text-2xl font-bold text-slate-800 mt-1">${filteredPartners.length}</p></div>
           </div>
 
           <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -306,22 +348,7 @@
                   </tr>
                 </thead>
                 <tbody id="partnersTableBody">
-                  ${filteredPartners.length ? filteredPartners.map((partner) => `
-                    <tr class="border-t hover:bg-slate-50">
-                      <td class="p-3"><p class="font-medium text-slate-800">${partner.companyName || '-'}</p><p class="text-xs text-slate-500">${partner.notes || ''}</p></td>
-                      <td class="p-3">${partner.buyerName || '-'}</td>
-                      <td class="p-3">${partner.email || '-'}</td>
-                      <td class="p-3">${partner.website || '-'}</td>
-                      <td class="p-3">${partner.country || '-'}</td>
-                      <td class="p-3">${partner.productCategory || '-'}</td>
-                      <td class="p-3">
-                        <div class="flex items-center gap-2">
-                          <button type="button" data-action="edit-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-slate-200 hover:bg-slate-100">Edit</button>
-                          <button type="button" data-action="delete-company" data-id="${partner.id}" class="px-2 py-1 text-xs rounded border border-red-200 text-red-600 hover:bg-red-50">Delete</button>
-                        </div>
-                      </td>
-                    </tr>
-                  `).join('') : `<tr><td colspan="7" class="p-4 text-center text-slate-500">${noData ? 'No companies yet. Add your first company.' : 'No matching companies found. Try another search.'}</td></tr>`}
+                  ${getPartnersTableRowsMarkup(filteredPartners)}
                 </tbody>
               </table>
           </div>
@@ -465,14 +492,14 @@
       if (searchInput) {
         searchInput.addEventListener('input', (event) => {
           appState.partnerSearch = event.target.value;
-          renderCurrentView();
+          renderPartnersTableRows();
         });
       }
 
       if (sortSelect) {
         sortSelect.addEventListener('change', (event) => {
           appState.partnerSort = event.target.value;
-          renderCurrentView();
+          renderPartnersTableRows();
         });
       }
 
