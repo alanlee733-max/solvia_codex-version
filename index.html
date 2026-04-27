@@ -272,6 +272,7 @@
       companySavedView: 'all',
       companyFormOpen: false,
       taskFormOpen: false,
+      editingTaskId: null,
       companyFormMode: 'add',
       editingCompanyId: null
     };
@@ -542,7 +543,7 @@
       return `${year}-${month}-${day}`;
     }
 
-    function getActionItems() {
+    function getCalendarActions() {
       const companyItems = companiesData
         .filter((company) => !!parseInputDateLocal(company.nextActionDate))
         .map((company) => ({
@@ -577,7 +578,7 @@
 
     function getTaskGroups() {
       const today = getTodayLocalDateStart();
-      const actions = getActionItems();
+      const actions = getCalendarActions();
       const todayItems = [];
       const overdueItems = [];
       const upcomingItems = [];
@@ -630,8 +631,36 @@
       `;
     }
 
+    function renderTaskActionListSection(title, items, emptyMessage) {
+      if (!items.length) {
+        return `<div><p class="text-sm font-semibold text-slate-700 mb-2">${title}</p><p class="text-xs text-slate-400">${emptyMessage}</p></div>`;
+      }
+
+      return `
+        <div>
+          <p class="text-sm font-semibold text-slate-700 mb-2">${title}</p>
+          <ul class="space-y-2">
+            ${items.slice(0, 8).map((item) => `
+              <li class="border border-slate-100 rounded-md px-2 py-1 text-xs">
+                <p class="font-medium text-slate-700">${escapeHtml(item.title || '-')}</p>
+                <p class="text-slate-500">${escapeHtml(item.dueDate || '-')} · Priority ${escapeHtml(item.priority || '-')} · ${escapeHtml(item.status || '-')}</p>
+                ${item.companyName ? `<p class="text-slate-400">${escapeHtml(item.companyName)}</p>` : ''}
+                ${item.source === 'task' ? `
+                  <div class="mt-1 flex gap-1">
+                    <button type="button" data-task-action="edit" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-slate-200 rounded text-[11px] text-slate-600 hover:bg-slate-50">Edit</button>
+                    <button type="button" data-task-action="delete" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-red-200 rounded text-[11px] text-red-600 hover:bg-red-50">Delete</button>
+                  </div>
+                ` : ''}
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
     function renderTasksView() {
       const { actions, todayItems, overdueItems, upcomingItems, byDate } = getTaskGroups();
+      const editingTask = tasksData.find((task) => String(task.id) === String(appState.editingTaskId));
       const now = new Date();
       const year = now.getFullYear();
       const monthIndex = now.getMonth();
@@ -681,32 +710,34 @@
           <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100">
             <div class="flex items-center justify-between mb-3">
               <p class="text-sm font-semibold text-slate-700">Task Actions</p>
-              <button id="openTaskFormBtn" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Add Task</button>
-            </div>
+                  <button id="openTaskFormBtn" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Add Task</button>
+                </div>
             ${appState.taskFormOpen ? `
               <form id="taskForm" class="space-y-3">
                 <p id="taskFormError" class="hidden text-sm text-red-600"></p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <input name="title" type="text" placeholder="Task Title *" class="w-full border border-slate-200 rounded-md text-sm" required />
+                  <input name="title" type="text" value="${escapeHtml(editingTask?.title || '')}" placeholder="Task Title *" class="w-full border border-slate-200 rounded-md text-sm" required />
                   <select name="companyId" class="w-full border border-slate-200 rounded-md text-sm">
                     <option value="">No linked company</option>
-                    ${companiesData.map((company) => `<option value="${escapeHtml(company.id)}">${escapeHtml(company.companyName || 'Unnamed company')}</option>`).join('')}
+                    ${companiesData.map((company) => `<option value="${escapeHtml(company.id)}" ${String(editingTask?.companyId || '') === String(company.id) ? 'selected' : ''}>${escapeHtml(company.companyName || 'Unnamed company')}</option>`).join('')}
                   </select>
-                  <input name="dueDate" type="date" class="w-full border border-slate-200 rounded-md text-sm" required />
+                  <input name="dueDate" type="date" value="${escapeHtml(editingTask?.dueDate || '')}" class="w-full border border-slate-200 rounded-md text-sm" required />
                   <select name="type" class="w-full border border-slate-200 rounded-md text-sm">
-                    ${TASK_TYPE_OPTIONS.map((item) => `<option value="${item}">${item}</option>`).join('')}
+                    ${TASK_TYPE_OPTIONS.map((item) => `<option value="${item}" ${editingTask?.type === item ? 'selected' : ''}>${item}</option>`).join('')}
                   </select>
                   <select name="status" class="w-full border border-slate-200 rounded-md text-sm">
-                    ${TASK_STATUS_OPTIONS.map((item) => `<option value="${item}">${item}</option>`).join('')}
+                    ${TASK_STATUS_OPTIONS.map((item) => `<option value="${item}" ${editingTask?.status === item ? 'selected' : ''}>${item}</option>`).join('')}
                   </select>
                   <select name="priority" class="w-full border border-slate-200 rounded-md text-sm">
-                    ${PRIORITY_OPTIONS.map((item) => `<option value="${item}">${item}</option>`).join('')}
+                    <option value="A" ${editingTask?.priority === 'A' ? 'selected' : ''}>A — Focus this week</option>
+                    <option value="B" ${editingTask?.priority === 'B' ? 'selected' : ''}>B — Normal follow-up</option>
+                    <option value="C" ${editingTask?.priority === 'C' ? 'selected' : ''}>C — Low / keep for later</option>
                   </select>
                 </div>
-                <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-20"></textarea>
+                <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-20">${escapeHtml(editingTask?.notes || '')}</textarea>
                 <div class="flex justify-end gap-2">
                   <button id="cancelTaskFormBtn" type="button" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
-                  <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">Create Task</button>
+                  <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">${editingTask ? 'Save Task' : 'Create Task'}</button>
                 </div>
               </form>
             ` : ''}
@@ -732,6 +763,12 @@
                 <div class="grid grid-cols-7 gap-2">
                   ${calendarCells.join('')}
                 </div>
+              </div>
+
+              <div id="taskActionLists" class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 space-y-4">
+                ${renderTaskActionListSection('Today', todayItems, 'No actions for today.')}
+                ${renderTaskActionListSection('Overdue', overdueItems, 'No overdue actions.')}
+                ${renderTaskActionListSection('Upcoming', upcomingItems, 'No upcoming actions.')}
               </div>
             </div>
 
@@ -1048,10 +1085,12 @@
       const openTaskFormBtn = document.getElementById('openTaskFormBtn');
       const cancelTaskFormBtn = document.getElementById('cancelTaskFormBtn');
       const taskForm = document.getElementById('taskForm');
+      const taskActionLists = document.getElementById('taskActionLists');
 
       if (openTaskFormBtn) {
         openTaskFormBtn.addEventListener('click', () => {
           appState.taskFormOpen = true;
+          appState.editingTaskId = null;
           renderCurrentView();
         });
       }
@@ -1059,7 +1098,35 @@
       if (cancelTaskFormBtn) {
         cancelTaskFormBtn.addEventListener('click', () => {
           appState.taskFormOpen = false;
+          appState.editingTaskId = null;
           renderCurrentView();
+        });
+      }
+
+      if (taskActionLists) {
+        taskActionLists.addEventListener('click', (event) => {
+          const actionButton = event.target.closest('[data-task-action]');
+          if (!actionButton) return;
+          const taskId = actionButton.dataset.taskId;
+          if (actionButton.dataset.taskAction === 'edit') {
+            appState.taskFormOpen = true;
+            appState.editingTaskId = taskId;
+            renderCurrentView();
+            return;
+          }
+          if (actionButton.dataset.taskAction === 'delete') {
+            const targetTask = tasksData.find((task) => String(task.id) === String(taskId));
+            if (!targetTask) return;
+            const shouldDelete = window.confirm(`Delete task "${targetTask.title || 'Untitled'}"?`);
+            if (!shouldDelete) return;
+            tasksData = tasksData.filter((task) => String(task.id) !== String(taskId));
+            saveTasksToStorage(tasksData);
+            if (String(appState.editingTaskId) === String(taskId)) {
+              appState.taskFormOpen = false;
+              appState.editingTaskId = null;
+            }
+            renderCurrentView();
+          }
         });
       }
 
@@ -1084,24 +1151,42 @@
 
           errorNode.classList.add('hidden');
           const timestamp = getNowIso();
-          tasksData = [
-            normalizeTaskRecord({
-              id: Date.now(),
-              title,
-              companyId,
-              dueDate,
-              type,
-              status,
-              priority,
-              notes,
-              createdAt: timestamp,
-              updatedAt: timestamp
-            }),
-            ...tasksData
-          ];
+          if (appState.editingTaskId) {
+            tasksData = tasksData.map((task) => {
+              if (String(task.id) !== String(appState.editingTaskId)) return task;
+              return normalizeTaskRecord({
+                ...task,
+                title,
+                companyId,
+                dueDate,
+                type,
+                status,
+                priority,
+                notes,
+                updatedAt: timestamp
+              });
+            });
+          } else {
+            tasksData = [
+              normalizeTaskRecord({
+                id: Date.now(),
+                title,
+                companyId,
+                dueDate,
+                type,
+                status,
+                priority,
+                notes,
+                createdAt: timestamp,
+                updatedAt: timestamp
+              }),
+              ...tasksData
+            ];
+          }
 
           saveTasksToStorage(tasksData);
           appState.taskFormOpen = false;
+          appState.editingTaskId = null;
           renderCurrentView();
         });
       }
