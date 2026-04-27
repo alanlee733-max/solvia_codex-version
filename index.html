@@ -272,7 +272,9 @@
       companySavedView: 'all',
       companyFormOpen: false,
       taskFormOpen: false,
+      taskFormMode: 'add',
       editingTaskId: null,
+      selectedCalendarActionId: null,
       companyFormMode: 'add',
       editingCompanyId: null
     };
@@ -378,6 +380,14 @@
 
     function getCompanyIdentityKey(companyName, email) {
       return `${String(companyName || '').trim().toLowerCase()}::${String(email || '').trim().toLowerCase()}`;
+    }
+
+    function getTaskById(taskId) {
+      return tasksData.find((task) => String(task.id) === String(taskId)) || null;
+    }
+
+    function getCompanyById(companyId) {
+      return companiesData.find((company) => String(company.id) === String(companyId)) || null;
     }
 
     function getVisibleCompanies() {
@@ -548,13 +558,16 @@
         .filter((company) => !!parseInputDateLocal(company.nextActionDate))
         .map((company) => ({
           id: `company-${company.id}`,
+          sourceType: 'companyNextAction',
           source: 'company',
           dueDate: company.nextActionDate,
           title: `${company.companyName || 'Company'} follow-up`,
           companyId: String(company.id || ''),
           companyName: company.companyName || '',
+          type: 'Follow-up',
           priority: company.priority || 'B',
-          status: company.status || 'Open'
+          status: company.status || 'Open',
+          notes: company.notes || ''
         }));
 
       const taskItems = tasksData
@@ -563,17 +576,25 @@
           const linkedCompany = companiesData.find((company) => String(company.id) === String(task.companyId));
           return {
             id: `task-${task.id}`,
+            sourceType: 'task',
             source: 'task',
             dueDate: task.dueDate,
             title: task.title || 'Untitled task',
             companyId: String(task.companyId || ''),
             companyName: linkedCompany?.companyName || '',
+            type: task.type || 'Follow-up',
             priority: task.priority || 'B',
-            status: task.status || 'Open'
+            status: task.status || 'Open',
+            notes: task.notes || ''
           };
         });
 
       return [...companyItems, ...taskItems];
+    }
+
+    function getSelectedCalendarAction() {
+      if (!appState.selectedCalendarActionId) return null;
+      return getCalendarActions().find((item) => String(item.id) === String(appState.selectedCalendarActionId)) || null;
     }
 
     function getTaskGroups() {
@@ -619,11 +640,11 @@
           <p class="text-xs font-semibold text-slate-500">${day}</p>
           <div class="mt-1 space-y-1">
             ${visible.map((item) => `
-              <div class="text-[11px] bg-slate-50 rounded px-1.5 py-1">
+              <button type="button" data-action="select-calendar-action" data-action-id="${escapeHtml(item.id)}" data-source="${escapeHtml(item.source)}" class="w-full text-left text-[11px] rounded px-1.5 py-1 border transition-colors cursor-pointer ${String(appState.selectedCalendarActionId) === String(item.id) ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-50 border-slate-100 hover:bg-blue-50 hover:border-blue-200'}">
                 <p class="font-medium text-slate-700 truncate">${escapeHtml(item.title || '-')}</p>
                 <p class="text-slate-500">P${escapeHtml(item.priority || '-')} · ${escapeHtml(item.status || '-')}</p>
                 ${item.source === 'task' && item.companyName ? `<p class="text-slate-400 truncate">${escapeHtml(item.companyName)}</p>` : ''}
-              </div>
+              </button>
             `).join('')}
             ${remainingCount ? `<p class="text-[11px] text-slate-400">+${remainingCount} more</p>` : ''}
           </div>
@@ -647,8 +668,8 @@
                 ${item.companyName ? `<p class="text-slate-400">${escapeHtml(item.companyName)}</p>` : ''}
                 ${item.source === 'task' ? `
                   <div class="mt-1 flex gap-1">
-                    <button type="button" data-task-action="edit" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-slate-200 rounded text-[11px] text-slate-600 hover:bg-slate-50">Edit</button>
-                    <button type="button" data-task-action="delete" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-red-200 rounded text-[11px] text-red-600 hover:bg-red-50">Delete</button>
+                    <button type="button" data-action="edit-task" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-slate-200 rounded text-[11px] text-slate-600 hover:bg-slate-50">Edit</button>
+                    <button type="button" data-action="delete-task" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-red-200 rounded text-[11px] text-red-600 hover:bg-red-50">Delete</button>
                   </div>
                 ` : ''}
               </li>
@@ -661,6 +682,7 @@
     function renderTasksView() {
       const { actions, todayItems, overdueItems, upcomingItems, byDate } = getTaskGroups();
       const editingTask = tasksData.find((task) => String(task.id) === String(appState.editingTaskId));
+      const selectedAction = getSelectedCalendarAction();
       const now = new Date();
       const year = now.getFullYear();
       const monthIndex = now.getMonth();
@@ -737,14 +759,14 @@
                 <textarea name="notes" placeholder="Notes" class="w-full border border-slate-200 rounded-md text-sm min-h-20">${escapeHtml(editingTask?.notes || '')}</textarea>
                 <div class="flex justify-end gap-2">
                   <button id="cancelTaskFormBtn" type="button" class="px-3 py-2 rounded-md border border-slate-200 text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
-                  <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">${editingTask ? 'Save Task' : 'Create Task'}</button>
+                  <button type="submit" class="px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700">${appState.taskFormMode === 'edit' ? 'Save Changes' : 'Create Task'}</button>
                 </div>
               </form>
             ` : ''}
           </div>
 
           <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,2fr)_360px] gap-6">
-            <div class="space-y-4">
+            <div id="tasksActionArea" class="space-y-4">
               <div class="grid grid-cols-3 gap-3">
                 <div class="bg-white rounded-xl p-3 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Today</p><p class="text-xl font-semibold text-slate-800">${todayItems.length}</p></div>
                 <div class="bg-white rounded-xl p-3 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Overdue</p><p class="text-xl font-semibold text-slate-800">${overdueItems.length}</p></div>
@@ -763,6 +785,25 @@
                 <div class="grid grid-cols-7 gap-2">
                   ${calendarCells.join('')}
                 </div>
+              </div>
+
+              <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100">
+                <p class="text-sm font-semibold text-slate-700 mb-2">Selected Action</p>
+                ${selectedAction ? `
+                  <div class="text-sm space-y-1">
+                    <p class="font-medium text-slate-800">${escapeHtml(selectedAction.title || '-')}</p>
+                    <p class="text-slate-500">${escapeHtml(selectedAction.dueDate || '-')} · ${escapeHtml(selectedAction.type || 'Follow-up')}</p>
+                    <p class="text-slate-500">Status: ${escapeHtml(selectedAction.status || '-')} · Priority: ${escapeHtml(selectedAction.priority || '-')}</p>
+                    ${selectedAction.companyName ? `<p class="text-slate-500">Company: ${escapeHtml(selectedAction.companyName)}</p>` : ''}
+                    ${selectedAction.notes ? `<p class="text-slate-500">Notes: ${escapeHtml(selectedAction.notes)}</p>` : ''}
+                    ${selectedAction.source === 'task'
+                      ? `<div class="pt-2 flex gap-2">
+                          <button type="button" data-action="edit-task" data-task-id="${escapeHtml(selectedAction.id.replace('task-', ''))}" class="px-3 py-1.5 border border-slate-200 rounded text-xs text-slate-600 hover:bg-slate-50">Edit Task</button>
+                          <button type="button" data-action="delete-task" data-task-id="${escapeHtml(selectedAction.id.replace('task-', ''))}" class="px-3 py-1.5 border border-red-200 rounded text-xs text-red-600 hover:bg-red-50">Delete Task</button>
+                        </div>`
+                      : '<p class="text-xs text-slate-400 pt-2">This is a Company next action. Edit it from the Company record.</p>'}
+                  </div>
+                ` : '<p class="text-sm text-slate-500">Select an action from the calendar to review details.</p>'}
               </div>
 
               <div id="taskActionLists" class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 space-y-4">
@@ -1085,12 +1126,14 @@
       const openTaskFormBtn = document.getElementById('openTaskFormBtn');
       const cancelTaskFormBtn = document.getElementById('cancelTaskFormBtn');
       const taskForm = document.getElementById('taskForm');
-      const taskActionLists = document.getElementById('taskActionLists');
+      const tasksActionArea = document.getElementById('tasksActionArea');
 
       if (openTaskFormBtn) {
         openTaskFormBtn.addEventListener('click', () => {
           appState.taskFormOpen = true;
+          appState.taskFormMode = 'add';
           appState.editingTaskId = null;
+          appState.selectedCalendarActionId = null;
           renderCurrentView();
         });
       }
@@ -1098,34 +1141,53 @@
       if (cancelTaskFormBtn) {
         cancelTaskFormBtn.addEventListener('click', () => {
           appState.taskFormOpen = false;
+          appState.taskFormMode = 'add';
           appState.editingTaskId = null;
           renderCurrentView();
         });
       }
 
-      if (taskActionLists) {
-        taskActionLists.addEventListener('click', (event) => {
-          const actionButton = event.target.closest('[data-task-action]');
+      function startTaskEdit(taskId) {
+        appState.taskFormOpen = true;
+        appState.taskFormMode = 'edit';
+        appState.editingTaskId = taskId;
+        appState.selectedCalendarActionId = `task-${taskId}`;
+        renderCurrentView();
+      }
+
+      function deleteTaskById(taskId) {
+        const targetTask = getTaskById(taskId);
+        if (!targetTask) return;
+        const shouldDelete = window.confirm(`Delete task "${targetTask.title || 'Untitled'}"?`);
+        if (!shouldDelete) return;
+        tasksData = tasksData.filter((task) => String(task.id) !== String(taskId));
+        saveTasksToStorage(tasksData);
+        if (String(appState.editingTaskId) === String(taskId)) {
+          appState.taskFormOpen = false;
+          appState.taskFormMode = 'add';
+          appState.editingTaskId = null;
+        }
+        if (String(appState.selectedCalendarActionId) === String(`task-${taskId}`)) {
+          appState.selectedCalendarActionId = null;
+        }
+        renderCurrentView();
+      }
+
+      if (tasksActionArea) {
+        tasksActionArea.addEventListener('click', (event) => {
+          const actionButton = event.target.closest('[data-action]');
           if (!actionButton) return;
-          const taskId = actionButton.dataset.taskId;
-          if (actionButton.dataset.taskAction === 'edit') {
-            appState.taskFormOpen = true;
-            appState.editingTaskId = taskId;
+          if (actionButton.dataset.action === 'select-calendar-action') {
+            appState.selectedCalendarActionId = actionButton.dataset.actionId;
             renderCurrentView();
             return;
           }
-          if (actionButton.dataset.taskAction === 'delete') {
-            const targetTask = tasksData.find((task) => String(task.id) === String(taskId));
-            if (!targetTask) return;
-            const shouldDelete = window.confirm(`Delete task "${targetTask.title || 'Untitled'}"?`);
-            if (!shouldDelete) return;
-            tasksData = tasksData.filter((task) => String(task.id) !== String(taskId));
-            saveTasksToStorage(tasksData);
-            if (String(appState.editingTaskId) === String(taskId)) {
-              appState.taskFormOpen = false;
-              appState.editingTaskId = null;
-            }
-            renderCurrentView();
+          if (actionButton.dataset.action === 'edit-task') {
+            startTaskEdit(actionButton.dataset.taskId);
+            return;
+          }
+          if (actionButton.dataset.action === 'delete-task') {
+            deleteTaskById(actionButton.dataset.taskId);
           }
         });
       }
@@ -1151,7 +1213,7 @@
 
           errorNode.classList.add('hidden');
           const timestamp = getNowIso();
-          if (appState.editingTaskId) {
+          if (appState.taskFormMode === 'edit' && appState.editingTaskId) {
             tasksData = tasksData.map((task) => {
               if (String(task.id) !== String(appState.editingTaskId)) return task;
               return normalizeTaskRecord({
@@ -1186,6 +1248,7 @@
 
           saveTasksToStorage(tasksData);
           appState.taskFormOpen = false;
+          appState.taskFormMode = 'add';
           appState.editingTaskId = null;
           renderCurrentView();
         });
