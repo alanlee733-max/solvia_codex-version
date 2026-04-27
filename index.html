@@ -573,7 +573,7 @@
       const taskItems = tasksData
         .filter((task) => !!parseInputDateLocal(task.dueDate))
         .map((task) => {
-          const linkedCompany = companiesData.find((company) => String(company.id) === String(task.companyId));
+          const linkedCompany = getCompanyById(task.companyId);
           return {
             id: `task-${task.id}`,
             sourceType: 'task',
@@ -640,7 +640,7 @@
           <p class="text-xs font-semibold text-slate-500">${day}</p>
           <div class="mt-1 space-y-1">
             ${visible.map((item) => `
-              <button type="button" data-action="select-calendar-action" data-action-id="${escapeHtml(item.id)}" data-source="${escapeHtml(item.source)}" class="w-full text-left text-[11px] rounded px-1.5 py-1 border transition-colors cursor-pointer ${String(appState.selectedCalendarActionId) === String(item.id) ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-50 border-slate-100 hover:bg-blue-50 hover:border-blue-200'}">
+              <button type="button" data-action="select-calendar-action" data-action-id="${escapeHtml(item.id)}" data-source="${escapeHtml(item.source)}" class="w-full text-left text-[11px] rounded px-1.5 py-1 border border-transparent transition-colors cursor-pointer ${String(appState.selectedCalendarActionId) === String(item.id) ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-50 hover:bg-blue-50 hover:border-blue-200'}">
                 <p class="font-medium text-slate-700 truncate">${escapeHtml(item.title || '-')}</p>
                 <p class="text-slate-500">P${escapeHtml(item.priority || '-')} · ${escapeHtml(item.status || '-')}</p>
                 ${item.source === 'task' && item.companyName ? `<p class="text-slate-400 truncate">${escapeHtml(item.companyName)}</p>` : ''}
