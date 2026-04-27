@@ -668,6 +668,12 @@
                 <p class="font-medium text-slate-700">${escapeHtml(item.title || '-')}</p>
                 <p class="text-slate-500">${escapeHtml(item.dueDate || '-')} · Priority ${escapeHtml(item.priority || '-')} · ${escapeHtml(item.status || '-')}</p>
                 ${item.companyName ? `<p class="text-slate-400">${escapeHtml(item.companyName)}</p>` : ''}
+                ${item.source === 'task' ? `
+                  <div class="mt-1 flex gap-1">
+                    <button type="button" data-action="edit-task" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-slate-200 rounded text-[11px] text-slate-600 hover:bg-slate-50">Edit</button>
+                    <button type="button" data-action="delete-task" data-task-id="${escapeHtml(item.id.replace('task-', ''))}" class="px-2 py-0.5 border border-red-200 rounded text-[11px] text-red-600 hover:bg-red-50">Delete</button>
+                  </div>
+                ` : ''}
               </li>
             `).join('')}
           </ul>
@@ -792,10 +798,16 @@
                 ${selectedAction ? `
                   <div class="text-sm space-y-1">
                     <p class="font-medium text-slate-800">${escapeHtml(selectedAction.title || '-')}</p>
-                    <p class="text-slate-500">Due: ${escapeHtml(selectedAction.dueDate || '-')}</p>
-                    <p class="text-slate-500">Source: ${escapeHtml(selectedAction.source || '-')}</p>
-                    <p class="text-slate-500">Priority: ${escapeHtml(selectedAction.priority || '-')} · Status: ${escapeHtml(selectedAction.status || '-')}</p>
+                    <p class="text-slate-500">${escapeHtml(selectedAction.dueDate || '-')} · ${escapeHtml(selectedAction.type || 'Follow-up')}</p>
+                    <p class="text-slate-500">Status: ${escapeHtml(selectedAction.status || '-')} · Priority: ${escapeHtml(selectedAction.priority || '-')}</p>
                     ${selectedAction.companyName ? `<p class="text-slate-500">Company: ${escapeHtml(selectedAction.companyName)}</p>` : ''}
+                    ${selectedAction.notes ? `<p class="text-slate-500">Notes: ${escapeHtml(selectedAction.notes)}</p>` : ''}
+                    ${selectedAction.source === 'task'
+                      ? `<div class="pt-2 flex gap-2">
+                          <button type="button" data-action="edit-task" data-task-id="${escapeHtml(selectedAction.id.replace('task-', ''))}" class="px-3 py-1.5 border border-slate-200 rounded text-xs text-slate-600 hover:bg-slate-50">Edit Task</button>
+                          <button type="button" data-action="delete-task" data-task-id="${escapeHtml(selectedAction.id.replace('task-', ''))}" class="px-3 py-1.5 border border-red-200 rounded text-xs text-red-600 hover:bg-red-50">Delete Task</button>
+                        </div>`
+                      : '<p class="text-xs text-slate-400 pt-2">This is a Company next action. Edit it from the Company record.</p>'}
                   </div>
                 ` : '<p class="text-sm text-slate-500">Select an action from the calendar to review details.</p>'}
               </div>
@@ -1142,6 +1154,32 @@
         });
       }
 
+      function startTaskEdit(taskId) {
+        appState.taskFormOpen = true;
+        appState.taskFormMode = 'edit';
+        appState.editingTaskId = taskId;
+        appState.selectedCalendarActionId = `task-${taskId}`;
+        renderCurrentView();
+      }
+
+      function deleteTaskById(taskId) {
+        const targetTask = getTaskById(taskId);
+        if (!targetTask) return;
+        const shouldDelete = window.confirm(`Delete task "${targetTask.title || 'Untitled'}"?`);
+        if (!shouldDelete) return;
+        tasksData = tasksData.filter((task) => String(task.id) !== String(taskId));
+        saveTasksToStorage(tasksData);
+        if (String(appState.editingTaskId) === String(taskId)) {
+          appState.taskFormOpen = false;
+          appState.taskFormMode = 'add';
+          appState.editingTaskId = null;
+        }
+        if (String(appState.selectedCalendarActionId) === String(`task-${taskId}`)) {
+          appState.selectedCalendarActionId = null;
+        }
+        renderCurrentView();
+      }
+
       if (tasksActionArea) {
         tasksActionArea.addEventListener('click', (event) => {
           const actionButton = event.target.closest('[data-action]');
@@ -1177,6 +1215,13 @@
             appState.selectedCalendarActionId = actionButton.dataset.actionId;
             renderCurrentView();
             return;
+          }
+          if (actionButton.dataset.action === 'edit-task') {
+            startTaskEdit(actionButton.dataset.taskId);
+            return;
+          }
+          if (actionButton.dataset.action === 'delete-task') {
+            deleteTaskById(actionButton.dataset.taskId);
           }
         });
       }
