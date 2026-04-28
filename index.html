@@ -159,12 +159,15 @@
   <script>
     const COMPANY_STORAGE_KEY = 'alan-crm-companies';
     const TASK_STORAGE_KEY = 'alan-crm-tasks';
+    const UI_STATE_STORAGE_KEY = 'alan-crm-ui-state';
     const BUSINESS_FIELDS = ['Aesthetics', 'Bio/OEM', 'AI/Software', 'Trade', 'Other'];
     const BUYER_TYPES = ['Distributor', 'Clinic', 'Manufacturer', 'Agency', 'Vendor', 'Other'];
     const STATUS_OPTIONS = ['New', 'Contacted', 'Qualified', 'Active', 'Dormant', 'Archived'];
     const PRIORITY_OPTIONS = ['A', 'B', 'C'];
     const TASK_TYPE_OPTIONS = ['Email', 'Call', 'Quote', 'Sample', 'Meeting', 'Follow-up', 'Document', 'Other'];
     const TASK_STATUS_OPTIONS = ['Open', 'Done', 'Cancelled'];
+    const ALLOWED_VIEWS = ['overview', 'partners', 'deals', 'tasks', 'activity', 'documents'];
+    const ALLOWED_COMPANY_SAVED_VIEWS = ['all', 'needsAction', 'priority', 'pausedLeads', 'fieldAesthetics', 'fieldBioOem', 'fieldAiSoftware', 'fieldTrade', 'fieldOther'];
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -262,18 +265,60 @@
       localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks));
     }
 
+    function loadUiStateFromStorage() {
+      const now = new Date();
+      const defaultState = {
+        currentView: 'overview',
+        companySavedView: 'all',
+        calendarYear: now.getFullYear(),
+        calendarMonthIndex: now.getMonth()
+      };
+
+      try {
+        const raw = localStorage.getItem(UI_STATE_STORAGE_KEY);
+        if (!raw) return defaultState;
+        const parsed = JSON.parse(raw);
+        const currentView = ALLOWED_VIEWS.includes(parsed?.currentView) ? parsed.currentView : defaultState.currentView;
+        const companySavedView = ALLOWED_COMPANY_SAVED_VIEWS.includes(parsed?.companySavedView) ? parsed.companySavedView : defaultState.companySavedView;
+        const calendarYear = Number.isInteger(parsed?.calendarYear) ? parsed.calendarYear : defaultState.calendarYear;
+        const calendarMonthIndex = Number.isInteger(parsed?.calendarMonthIndex) && parsed.calendarMonthIndex >= 0 && parsed.calendarMonthIndex <= 11
+          ? parsed.calendarMonthIndex
+          : defaultState.calendarMonthIndex;
+
+        return {
+          currentView,
+          companySavedView,
+          calendarYear,
+          calendarMonthIndex
+        };
+      } catch (error) {
+        return defaultState;
+      }
+    }
+
+    function saveUiStateToStorage() {
+      const uiState = {
+        currentView: appState.currentView,
+        companySavedView: appState.companySavedView,
+        calendarYear: appState.calendarYear,
+        calendarMonthIndex: appState.calendarMonthIndex
+      };
+      localStorage.setItem(UI_STATE_STORAGE_KEY, JSON.stringify(uiState));
+    }
+
     let companiesData = loadCompaniesFromStorage();
     let tasksData = loadTasksFromStorage();
+    const restoredUiState = loadUiStateFromStorage();
 
     const appState = {
-      currentView: 'partners',
+      currentView: restoredUiState.currentView,
       partnerSearch: '',
       partnerSort: 'updatedAtDesc',
-      companySavedView: 'all',
+      companySavedView: restoredUiState.companySavedView,
       companyFormOpen: false,
       taskFormOpen: false,
-      calendarYear: new Date().getFullYear(),
-      calendarMonthIndex: new Date().getMonth(),
+      calendarYear: restoredUiState.calendarYear,
+      calendarMonthIndex: restoredUiState.calendarMonthIndex,
       taskFormMode: 'add',
       editingTaskId: null,
       selectedCalendarActionId: null,
@@ -944,6 +989,7 @@
         if (savedViewButton) {
           appState.currentView = 'partners';
           appState.companySavedView = savedViewButton.dataset.companyView;
+          saveUiStateToStorage();
           renderCurrentView();
           return;
         }
@@ -954,6 +1000,7 @@
           appState.companySavedView = 'all';
         }
         appState.currentView = button.dataset.view;
+        saveUiStateToStorage();
         renderCurrentView();
       });
     }
@@ -1191,6 +1238,7 @@
             } else {
               appState.calendarMonthIndex -= 1;
             }
+            saveUiStateToStorage();
             renderCurrentView();
             return;
           }
@@ -1201,6 +1249,7 @@
             } else {
               appState.calendarMonthIndex += 1;
             }
+            saveUiStateToStorage();
             renderCurrentView();
             return;
           }
@@ -1208,6 +1257,7 @@
             const today = new Date();
             appState.calendarYear = today.getFullYear();
             appState.calendarMonthIndex = today.getMonth();
+            saveUiStateToStorage();
             renderCurrentView();
             return;
           }
