@@ -1022,6 +1022,41 @@
       });
     }
 
+    function getMeetingLogsListMarkup(logs) {
+      if (!logs.length) {
+        return '<div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-sm text-slate-500">No meeting logs found. Add your first meeting log.</p></div>';
+      }
+
+      return logs.map((log) => {
+        const linkedCompany = getCompanyById(log.companyId);
+        return `
+          <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-sm font-semibold text-slate-800">${escapeHtml(log.meetingDate || '-')} · ${escapeHtml(linkedCompany?.companyName || 'Unknown company')}</p>
+              <div class="flex gap-2">
+                <button type="button" data-action="edit-meeting-log" data-log-id="${escapeHtml(log.id)}" class="px-3 py-1 border border-slate-200 rounded text-xs text-slate-600 hover:bg-slate-50">Edit</button>
+                <button type="button" data-action="delete-meeting-log" data-log-id="${escapeHtml(log.id)}" class="px-3 py-1 border border-red-200 rounded text-xs text-red-600 hover:bg-red-50">Delete</button>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">${escapeHtml(log.source || 'Expo')}${log.eventName ? ` · ${escapeHtml(log.eventName)}` : ''}</p>
+            ${(log.staffName || log.contactName) ? `<p class="text-xs text-slate-500 mt-1">${log.staffName ? `Staff: ${escapeHtml(log.staffName)}` : ''}${log.staffName && log.contactName ? ' · ' : ''}${log.contactName ? `Contact: ${escapeHtml(log.contactName)}` : ''}</p>` : ''}
+            <p class="text-sm text-slate-700 mt-2">${escapeHtml(log.summary || '-')}</p>
+            ${log.interestTypes ? `<p class="text-xs text-slate-500 mt-1">Interest: ${escapeHtml(log.interestTypes)}</p>` : ''}
+            ${log.keyQuestions ? `<p class="text-xs text-slate-500 mt-1">Key Questions: ${escapeHtml(log.keyQuestions)}</p>` : ''}
+            ${log.nextActionText ? `<p class="text-xs text-slate-500 mt-1">Next Action: ${escapeHtml(log.nextActionText)}</p>` : ''}
+            <p class="text-xs text-slate-500 mt-1">Follow-up Needed: ${log.followUpNeeded ? 'Yes' : 'No'} · Priority ${escapeHtml(log.priority || 'B')}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderMeetingLogsList() {
+      const meetingLogsList = document.getElementById('meetingLogsList');
+      if (!meetingLogsList) return;
+      const visibleLogs = getVisibleMeetingLogs();
+      meetingLogsList.innerHTML = getMeetingLogsListMarkup(visibleLogs);
+    }
+
     function renderMeetingLogsView() {
       const editingLog = meetingLogsData.find((log) => String(log.id) === String(appState.editingMeetingLogId));
       const visibleLogs = getVisibleMeetingLogs();
@@ -1093,27 +1128,7 @@
           </div>
 
           <div id="meetingLogsList" class="space-y-3">
-            ${visibleLogs.length ? visibleLogs.map((log) => {
-              const linkedCompany = getCompanyById(log.companyId);
-              return `
-                <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100">
-                  <div class="flex flex-wrap items-center justify-between gap-2">
-                    <p class="text-sm font-semibold text-slate-800">${escapeHtml(log.meetingDate || '-')} · ${escapeHtml(linkedCompany?.companyName || 'Unknown company')}</p>
-                    <div class="flex gap-2">
-                      <button type="button" data-action="edit-meeting-log" data-log-id="${escapeHtml(log.id)}" class="px-3 py-1 border border-slate-200 rounded text-xs text-slate-600 hover:bg-slate-50">Edit</button>
-                      <button type="button" data-action="delete-meeting-log" data-log-id="${escapeHtml(log.id)}" class="px-3 py-1 border border-red-200 rounded text-xs text-red-600 hover:bg-red-50">Delete</button>
-                    </div>
-                  </div>
-                  <p class="text-xs text-slate-500 mt-1">${escapeHtml(log.source || 'Expo')}${log.eventName ? ` · ${escapeHtml(log.eventName)}` : ''}</p>
-                  ${(log.staffName || log.contactName) ? `<p class="text-xs text-slate-500 mt-1">${log.staffName ? `Staff: ${escapeHtml(log.staffName)}` : ''}${log.staffName && log.contactName ? ' · ' : ''}${log.contactName ? `Contact: ${escapeHtml(log.contactName)}` : ''}</p>` : ''}
-                  <p class="text-sm text-slate-700 mt-2">${escapeHtml(log.summary || '-')}</p>
-                  ${log.interestTypes ? `<p class="text-xs text-slate-500 mt-1">Interest: ${escapeHtml(log.interestTypes)}</p>` : ''}
-                  ${log.keyQuestions ? `<p class="text-xs text-slate-500 mt-1">Key Questions: ${escapeHtml(log.keyQuestions)}</p>` : ''}
-                  ${log.nextActionText ? `<p class="text-xs text-slate-500 mt-1">Next Action: ${escapeHtml(log.nextActionText)}</p>` : ''}
-                  <p class="text-xs text-slate-500 mt-1">Follow-up Needed: ${log.followUpNeeded ? 'Yes' : 'No'} · Priority ${escapeHtml(log.priority || 'B')}</p>
-                </div>
-              `;
-            }).join('') : '<div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100"><p class="text-sm text-slate-500">No meeting logs found. Add your first meeting log.</p></div>'}
+            ${getMeetingLogsListMarkup(visibleLogs)}
           </div>
         </div>
       `;
@@ -1623,7 +1638,7 @@
       if (meetingLogSearchInput) {
         meetingLogSearchInput.addEventListener('input', (event) => {
           appState.meetingLogSearch = event.target.value;
-          renderCurrentView();
+          renderMeetingLogsList();
         });
       }
 
