@@ -676,6 +676,67 @@
       return { actions, todayItems, overdueItems, upcomingItems, byDate };
     }
 
+    function isOpenTaskStatus(status) {
+      return status !== 'Done' && status !== 'Cancelled';
+    }
+
+    function isActiveCompanyStatus(status) {
+      return status !== 'Archived' && status !== 'Dormant';
+    }
+
+    function getOpenTaskCount() {
+      return tasksData.filter((task) => isOpenTaskStatus(task.status)).length;
+    }
+
+    function getOverviewOverdueCount() {
+      const today = getTodayLocalDateStart();
+      return getCalendarActions().filter((item) => {
+        const actionDate = parseInputDateLocal(item.dueDate);
+        if (!actionDate || actionDate >= today) return false;
+        return item.source === 'task'
+          ? isOpenTaskStatus(item.status)
+          : isActiveCompanyStatus(item.status);
+      }).length;
+    }
+
+    function getPriorityFocusCount() {
+      const taskPriorityA = tasksData.filter((task) => task.priority === 'A' && isOpenTaskStatus(task.status)).length;
+      const companyPriorityA = companiesData.filter((company) => company.priority === 'A').length;
+      return taskPriorityA + companyPriorityA;
+    }
+
+    function getWeeklyFocusItems() {
+      const today = getTodayLocalDateStart();
+      const next7 = new Date(today);
+      next7.setDate(next7.getDate() + 7);
+
+      const ranked = getCalendarActions()
+        .map((item) => {
+          const actionDate = parseInputDateLocal(item.dueDate);
+          if (!actionDate) return null;
+          const isActive = item.source === 'task'
+            ? isOpenTaskStatus(item.status)
+            : isActiveCompanyStatus(item.status);
+          if (!isActive) return null;
+
+          let rank = null;
+          if (actionDate < today) rank = 0;
+          else if (actionDate.getTime() === today.getTime()) rank = 1;
+          else if (item.priority === 'A') rank = 2;
+          else if (actionDate <= next7) rank = 3;
+          else return null;
+
+          return { ...item, rank, actionDate };
+        })
+        .filter(Boolean)
+        .sort((a, b) => {
+          if (a.rank !== b.rank) return a.rank - b.rank;
+          return a.actionDate - b.actionDate;
+        });
+
+      return ranked.slice(0, 5);
+    }
+
     function renderCalendarDayCell(year, monthIndex, day, byDate) {
       const dateKey = formatDateKey(new Date(year, monthIndex, day));
       const dayItems = byDate[dateKey] || [];
@@ -879,30 +940,49 @@
     }
 
     const viewTemplates = {
-      overview: () => `
-        <div class="space-y-6">
-          <div>
-            <h1 class="text-2xl font-bold text-slate-800">Overview</h1>
-            <p class="text-sm text-slate-400 mt-1">Command Center / Snapshot</p>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            ${['Open Deals', 'Pending Tasks', 'Partners Active', 'Revenue MTD'].map((item, i) => `
+      overview: () => {
+        const weeklyFocusItems = getWeeklyFocusItems();
+        return `
+          <div class="space-y-6">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-800">Overview</h1>
+              <p class="text-sm text-slate-400 mt-1">Command Center / Snapshot</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
-                <p class="text-sm text-slate-500">${item}</p>
-                <p class="text-2xl font-bold text-slate-800 mt-2">${['18', '7', '12', '$84K'][i]}</p>
+                <p class="text-sm text-slate-500">Total Companies</p>
+                <p class="text-2xl font-bold text-slate-800 mt-2">${companiesData.length}</p>
               </div>
-            `).join('')}
+              <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
+                <p class="text-sm text-slate-500">Open Tasks</p>
+                <p class="text-2xl font-bold text-slate-800 mt-2">${getOpenTaskCount()}</p>
+              </div>
+              <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
+                <p class="text-sm text-slate-500">Overdue</p>
+                <p class="text-2xl font-bold text-slate-800 mt-2">${getOverviewOverdueCount()}</p>
+              </div>
+              <div class="bg-white rounded-xl p-5 custom-shadow border border-slate-100">
+                <p class="text-sm text-slate-500">Priority A</p>
+                <p class="text-2xl font-bold text-slate-800 mt-2">${getPriorityFocusCount()}</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100">
+              <h3 class="font-semibold text-slate-800 mb-3">Weekly Focus</h3>
+              ${weeklyFocusItems.length ? `
+                <ul class="space-y-2">
+                  ${weeklyFocusItems.map((item) => `
+                    <li class="text-sm text-slate-600 border border-slate-100 rounded-md px-3 py-2">
+                      <p class="font-medium text-slate-800">${escapeHtml(item.title || '-')}</p>
+                      <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(item.dueDate || '-')} · Priority ${escapeHtml(item.priority || '-')} · ${escapeHtml(item.status || '-')}</p>
+                      ${item.companyName ? `<p class="text-xs text-slate-400 mt-0.5">${escapeHtml(item.companyName)}</p>` : ''}
+                    </li>
+                  `).join('')}
+                </ul>
+              ` : '<p class="text-sm text-slate-500">No urgent focus this week. Check the calendar for upcoming actions.</p>'}
+            </div>
           </div>
-          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100">
-            <h3 class="font-semibold text-slate-800 mb-3">Weekly Focus</h3>
-            <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
-              <li>Finalize 2 distributor quotes for UAE and Thailand.</li>
-              <li>Collect sample feedback from 3 partner clinics.</li>
-              <li>Review regulatory document checklist for new market onboarding.</li>
-            </ul>
-          </div>
-        </div>
-      `,
+        `;
+      },
       partners: () => renderPartnersView(),
       deals: () => `
         <div class="space-y-6">
