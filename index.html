@@ -809,6 +809,19 @@
       return taskPriorityA + companyPriorityA;
     }
 
+    function getPriorityAActionCount() {
+      return getCalendarActions().filter((item) => {
+        if (item.priority !== 'A') return false;
+        return item.source === 'task'
+          ? item.status !== 'Done' && item.status !== 'Cancelled'
+          : item.status !== 'Archived' && item.status !== 'Dormant';
+      }).length;
+    }
+
+    function getOpenDraftCount() {
+      return draftsData.filter((draft) => draft.status === 'Draft').length;
+    }
+
     function getWeeklyFocusItems() {
       const today = getTodayLocalDateStart();
       const next7 = new Date(today);
@@ -938,7 +951,7 @@
 
       return `
         <div class="space-y-6">
-          <div><h1 class="text-2xl font-bold text-slate-800">Action Calendar</h1><p class="text-sm text-slate-400 mt-1">Tasks / Company next actions</p></div>
+          <div><h1 class="text-2xl font-bold text-slate-800">Action Hub</h1><p class="text-sm text-slate-400 mt-1">Tasks / Daily execution board</p></div>
 
           <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100">
             <div class="flex items-center justify-between mb-3">
@@ -978,10 +991,23 @@
 
           <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,2fr)_360px] gap-6">
             <div id="tasksActionArea" class="space-y-4">
-              <div class="grid grid-cols-3 gap-3">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div class="bg-white rounded-xl p-3 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Today</p><p class="text-xl font-semibold text-slate-800">${todayItems.length}</p></div>
                 <div class="bg-white rounded-xl p-3 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Overdue</p><p class="text-xl font-semibold text-slate-800">${overdueItems.length}</p></div>
-                <div class="bg-white rounded-xl p-3 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Upcoming</p><p class="text-xl font-semibold text-slate-800">${upcomingItems.length}</p></div>
+                <div class="bg-white rounded-xl p-3 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Priority A</p><p class="text-xl font-semibold text-slate-800">${getPriorityAActionCount()}</p></div>
+                <div class="bg-white rounded-xl p-3 custom-shadow border border-slate-100"><p class="text-xs text-slate-500">Open Drafts</p><p class="text-xl font-semibold text-slate-800">${getOpenDraftCount()}</p></div>
+              </div>
+
+              <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 space-y-4">
+                <p class="text-sm font-semibold text-slate-700">Focus Queue</p>
+                ${renderTaskActionListSection('Overdue Actions', overdueItems.slice(0, 5), 'No overdue actions.')}
+                ${renderTaskActionListSection('Today Actions', todayItems.slice(0, 5), 'No actions due today.')}
+                ${renderTaskActionListSection('Priority A Actions', getCalendarActions().filter((item) => {
+                  if (item.priority !== 'A') return false;
+                  return item.source === 'task'
+                    ? item.status !== 'Done' && item.status !== 'Cancelled'
+                    : item.status !== 'Archived' && item.status !== 'Dormant';
+                }).slice(0, 5), 'No Priority A actions.')}
               </div>
 
               <div class="bg-white rounded-xl p-4 custom-shadow border border-slate-100">
@@ -1023,8 +1049,6 @@
               </div>
 
               <div id="taskActionLists" class="bg-white rounded-xl p-4 custom-shadow border border-slate-100 space-y-4">
-                ${renderTaskActionListSection('Today', todayItems, 'No actions for today.')}
-                ${renderTaskActionListSection('Overdue', overdueItems, 'No overdue actions.')}
                 ${renderTaskActionListSection('Upcoming', upcomingItems, 'No upcoming actions.')}
               </div>
             </div>
