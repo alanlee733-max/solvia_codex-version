@@ -90,10 +90,10 @@
       </div>
 
       <div class="mt-auto border-t border-slate-100 p-4 space-y-4">
-        <a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium" href="#">
+        <button data-view="settings" class="sidebar-item w-full text-left flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors text-sm font-medium">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
           Settings
-        </a>
+        </button>
         <div class="flex items-center gap-3 px-3 py-2">
           <img alt="Jane Doe" class="w-8 h-8 rounded-full bg-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBig2JqTEWA2uSOd5y6N4Y1mOnuC4rS18HNus-hpsb5WbbRxLMVQ922cV4DUdqbxz1snOxjsd_ELuG-aH58qmA8SKvl5MDrO1diZT96814rFhbuOp3HiHb1bVSv6yoVTLhc9V2RX2xpP4PpTgOl73e01sviNTbCmqfTJh9NpA8pBqvrGQ93uQ8wzTmTvWKCcbX6pe6MSy2ztsT3N9n7x-axnTyvRzaA9C_nQLAi5uS3u44WRqiDubY-GkwMH9jHSm19_8s_AQW5dvs" />
           <div class="flex-1 min-w-0">
@@ -181,7 +181,7 @@
     const MEETING_LOG_SOURCE_OPTIONS = ['Expo', 'Email', 'WhatsApp', 'Call', 'Zoom', 'Other'];
     const DRAFT_TYPE_OPTIONS = ['note', 'task', 'call', 'follow'];
     const DRAFT_STATUS_OPTIONS = ['Draft', 'Converted', 'Archived'];
-    const ALLOWED_VIEWS = ['overview', 'partners', 'deals', 'tasks', 'activity', 'documents'];
+    const ALLOWED_VIEWS = ['overview', 'partners', 'deals', 'tasks', 'activity', 'documents', 'settings'];
     const ALLOWED_COMPANY_SAVED_VIEWS = ['all', 'needsAction', 'priority', 'pausedLeads', 'fieldAesthetics', 'fieldBioOem', 'fieldAiSoftware', 'fieldTrade', 'fieldOther'];
 
     function escapeHtml(value) {
@@ -436,7 +436,8 @@
       deals: { title: 'Deals Pipeline', subtitle: 'Pipeline / Active deals' },
       tasks: { title: 'Action Hub', subtitle: 'Tasks / Daily execution board' },
       activity: { title: 'Meeting Logs', subtitle: 'Meetings / Conversation history' },
-      documents: { title: 'Documents', subtitle: 'Reports / Files and templates' }
+      documents: { title: 'Documents', subtitle: 'Reports / Files and templates' },
+      settings: { title: 'Settings', subtitle: 'System / Backup and preferences' }
     };
 
     function getTodayLocalDateStart() {
@@ -1290,8 +1291,56 @@
             </tbody></table>
           </div>
         </div>
+      `,
+      settings: () => `
+        <div class="space-y-6">
+          <div><h1 class="text-2xl font-bold text-slate-800">Settings</h1><p class="text-sm text-slate-400 mt-1">System / Backup and preferences</p></div>
+          <div class="bg-white rounded-xl p-6 custom-shadow border border-slate-100 space-y-3">
+            <h3 class="font-semibold text-slate-800">Data Backup</h3>
+            <p class="text-sm text-slate-500">Your CRM data is currently stored in this browser. Download a backup regularly to prevent data loss.</p>
+            <button id="exportBackupBtn" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-blue-700 transition-colors">Export Backup</button>
+          </div>
+        </div>
       `
     };
+
+    function exportCrmBackup() {
+      const backupPayload = {
+        appName: 'Alan CRM',
+        schemaVersion: 1,
+        exportedAt: getNowIso(),
+        data: {
+          companies: companiesData,
+          tasks: tasksData,
+          meetingLogs: meetingLogsData,
+          drafts: draftsData,
+          uiState: {
+            currentView: appState.currentView,
+            companySavedView: appState.companySavedView,
+            calendarYear: appState.calendarYear,
+            calendarMonthIndex: appState.calendarMonthIndex
+          }
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json' });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `alan-crm-backup-${formatDateKey(new Date())}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+    }
+
+    function setupSettingsViewInteractions() {
+      const exportBackupBtn = document.getElementById('exportBackupBtn');
+      if (!exportBackupBtn) return;
+      exportBackupBtn.addEventListener('click', () => {
+        exportCrmBackup();
+      });
+    }
 
     function renderCurrentView() {
       const viewRoot = document.getElementById('viewRoot');
@@ -1307,6 +1356,9 @@
       }
       if (appState.currentView === 'activity') {
         setupMeetingLogsViewInteractions();
+      }
+      if (appState.currentView === 'settings') {
+        setupSettingsViewInteractions();
       }
     }
 
@@ -1330,7 +1382,7 @@
     }
 
     function setupViewRouter() {
-      document.getElementById('sidebarNav').addEventListener('click', (event) => {
+      document.querySelector('aside').addEventListener('click', (event) => {
         const savedViewButton = event.target.closest('[data-company-view]');
         if (savedViewButton) {
           appState.currentView = 'partners';
