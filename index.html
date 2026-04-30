@@ -13,13 +13,32 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    :root {
+      --crm-bg: #fff8f3;
+      --crm-sidebar: #fbf2e9;
+      --crm-card: #ffffff;
+      --crm-card-soft: #f5ece3;
+      --crm-border: #eae1d8;
+      --crm-border-strong: #c7c6cb;
+      --crm-text: #1f1b16;
+      --crm-muted: #46464b;
+      --crm-primary: #05070e;
+      --crm-primary-hover: #1d1f27;
+      --crm-success: #006c4a;
+      --crm-success-soft: #e6f8ef;
+      --crm-info: #00203d;
+      --crm-info-soft: #d2e4ff;
+      --crm-info-border: #a0c9ff;
+      --crm-danger: #ba1a1a;
+      --crm-danger-soft: #ffdad6;
+    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
-      color: #334155;
+      background-color: var(--crm-bg);
+      color: var(--crm-text);
     }
     .custom-shadow {
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 2px rgba(31, 27, 22, 0.04), 0 6px 14px rgba(31, 27, 22, 0.05);
     }
     .timeline-line::before {
       content: '';
@@ -30,6 +49,130 @@
       width: 2px;
       background-color: #cbd5e1;
       z-index: 0;
+    }
+
+    aside.w-60 {
+      background-color: var(--crm-sidebar) !important;
+      border-color: var(--crm-border) !important;
+    }
+    header {
+      background-color: var(--crm-card) !important;
+      border-color: var(--crm-border) !important;
+    }
+    #viewRoot {
+      background-color: var(--crm-bg);
+    }
+    .bg-white {
+      background-color: var(--crm-card) !important;
+    }
+    .border-slate-100,
+    .border-slate-200 {
+      border-color: var(--crm-border) !important;
+    }
+    .text-slate-800 {
+      color: var(--crm-text) !important;
+    }
+    .text-slate-600,
+    .text-slate-500,
+    .text-slate-400 {
+      color: var(--crm-muted) !important;
+    }
+
+    input,
+    textarea,
+    select {
+      background-color: #fff !important;
+      border-color: var(--crm-border) !important;
+      border-radius: 0.75rem !important;
+      color: var(--crm-text) !important;
+      font-size: 14px;
+    }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--crm-border-strong) !important;
+      box-shadow: 0 0 0 3px rgba(199, 198, 203, 0.3) !important;
+    }
+
+    .bg-blue-600,
+    #openDraftingTableBtn,
+    #openCompanyFormBtn,
+    #openTaskFormBtn,
+    #openMeetingLogFormBtn,
+    #exportBackupBtn,
+    #saveDraftBtn {
+      background-color: var(--crm-primary) !important;
+      color: #fff !important;
+      border-radius: 0.75rem !important;
+      border: 1px solid rgba(5, 7, 14, 0.2);
+    }
+    .hover\:bg-blue-700:hover,
+    #openDraftingTableBtn:hover,
+    #openCompanyFormBtn:hover,
+    #openTaskFormBtn:hover,
+    #openMeetingLogFormBtn:hover,
+    #exportBackupBtn:hover,
+    #saveDraftBtn:hover {
+      background-color: var(--crm-primary-hover) !important;
+    }
+
+    [data-action="convert-draft-to-meeting-log"],
+    #draftToMeetingLogForm button[type="submit"] {
+      background-color: var(--crm-success) !important;
+      color: #fff !important;
+      border-color: rgba(0, 108, 74, 0.35) !important;
+    }
+    [data-action="convert-draft-to-meeting-log"]:hover,
+    #draftToMeetingLogForm button[type="submit"]:hover {
+      background-color: #059669 !important;
+    }
+
+    [data-action="convert-draft-to-task"],
+    #draftToTaskForm button[type="submit"] {
+      background-color: #1d1f27 !important;
+      color: #fff !important;
+      border-color: rgba(29, 31, 39, 0.35) !important;
+    }
+
+    [data-action="delete-task"],
+    [data-action="delete-meeting-log"],
+    [data-action="delete-company"] {
+      color: var(--crm-danger) !important;
+      border-color: var(--crm-danger-soft) !important;
+      background-color: rgba(255, 218, 214, 0.35) !important;
+    }
+    [data-action="archive-draft"] {
+      background-color: var(--crm-card-soft) !important;
+      border-color: var(--crm-border-strong) !important;
+      color: var(--crm-muted) !important;
+    }
+
+    .bg-blue-50,
+    .hover\:bg-blue-50:hover {
+      background-color: var(--crm-info-soft) !important;
+    }
+    .border-blue-200,
+    .border-blue-100,
+    .hover\:border-blue-200:hover {
+      border-color: var(--crm-info-border) !important;
+    }
+    .text-blue-700,
+    .text-blue-800,
+    .text-blue-600 {
+      color: var(--crm-info) !important;
+    }
+    .bg-emerald-50 {
+      background-color: var(--crm-success-soft) !important;
+    }
+
+    #draftingPanel {
+      background-color: var(--crm-card) !important;
+      border-color: var(--crm-border) !important;
+    }
+    #draftingPanel .bg-slate-50,
+    #draftingPanel .bg-slate-100 {
+      background-color: var(--crm-card-soft) !important;
     }
   </style>
 </head>
